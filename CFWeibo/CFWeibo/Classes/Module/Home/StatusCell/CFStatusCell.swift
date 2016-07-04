@@ -26,8 +26,16 @@ let kStatusPictureMaxCount: CGFloat = 3
 /// 配图视图的最大尺寸
 let kStatusPictureMaxWidth = kStatusPictureMaxCount * (kStatusPictureItemWidth + kStatusPictureItemMargin) - kStatusPictureItemMargin
 
+
+protocol CFStatusCellDelegate: NSObjectProtocol {
+    
+    func statusCellDidSelectedLinkText(text: String)
+}
+
 /// 微博 cell
 class CFStatusCell: UITableViewCell {
+    
+    weak var statusCellDelegate: CFStatusCellDelegate?
     /// 微博数据视图模型
     var statusVM: CFStatusVM? {
         didSet {
@@ -81,6 +89,43 @@ class CFStatusCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //  MARK: - 懒加载控件
+    //  1. 顶部视图
+    private lazy var topView: CFStatusTopView = CFStatusTopView()
+    //  2. 文本视图
+    lazy var contentLabel: FFLabel = {
+        let label = FFLabel()
+        label.textColor = UIColor.darkGrayColor()
+        label.font = UIFont.systemFontOfSize(17)
+        label.preferredMaxLayoutWidth = kScreenWidth - 2 * kStatusCellMargin
+        label.numberOfLines = 0
+        label.labelDelegate = self
+        return label
+    } ()
+    
+    //  3. 图片视图
+    lazy var pictureView: CFStatusPictureView = CFStatusPictureView()
+    
+    //  4. 底部视图
+    lazy var bottomView: CFStatusBottomView = CFStatusBottomView()
+    
+    
+}
+
+//  MARK: - 代理实现
+extension CFStatusCell: FFLabelDelegate {
+    func labelDidSelectedLinkText(label: FFLabel, text: String) {
+        //  判断 text 是否是 http 链接
+        if text.hasPrefix("http://") {
+            statusCellDelegate?.statusCellDidSelectedLinkText(text)
+        }
+    
+    }
+}
+
+
+//  MARK: - 初始化 cell
+extension CFStatusCell {
     func setupUI() {
         //  顶部分割视图
         backgroundColor = UIColor.whiteColor()
@@ -113,15 +158,15 @@ class CFStatusCell: UITableViewCell {
             offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
         
         //  4> 图片视图
-//        let cons = pictureView.ff_AlignVertical(
-//            type: ff_AlignType.BottomLeft,
-//            referView: contentLabel,
-//            size: CGSize(width: kStatusPictureMaxWidth, height: kStatusPictureMaxWidth),
-//            offset: CGPoint(x: 0, y: kStatusCellMargin))
-//        //  记录约束
-//        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Width)
-//        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Height)
-//        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Top)
+        //        let cons = pictureView.ff_AlignVertical(
+        //            type: ff_AlignType.BottomLeft,
+        //            referView: contentLabel,
+        //            size: CGSize(width: kStatusPictureMaxWidth, height: kStatusPictureMaxWidth),
+        //            offset: CGPoint(x: 0, y: kStatusCellMargin))
+        //        //  记录约束
+        //        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Width)
+        //        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Height)
+        //        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Top)
         
         //  5> 底部视图
         bottomView.ff_AlignVertical(
@@ -131,24 +176,12 @@ class CFStatusCell: UITableViewCell {
             offset: CGPoint(x: -kStatusCellMargin, y: kStatusCellMargin))
         
         //  指定底部视图相对底边约束
-//        bottomView.ff_AlignInner(
-//            type: ff_AlignType.BottomRight,
-//            referView: contentView,
-//            size: nil)
-        
+        //        bottomView.ff_AlignInner(
+        //            type: ff_AlignType.BottomRight,
+        //            referView: contentView,
+        //            size: nil)
         
     }
-    
-    //  MARK: - 懒加载控件
-    //  1. 顶部视图
-    private lazy var topView: CFStatusTopView = CFStatusTopView()
-    //  2. 文本视图
-    lazy var contentLabel = UILabel(title: nil, color: UIColor.darkGrayColor(), fontSize: 16, layoutWidth: UIScreen.mainScreen().bounds.width - 2 * kStatusCellMargin)
-    //  3. 图片视图
-    lazy var pictureView: CFStatusPictureView = CFStatusPictureView()
-    
-    //  4. 底部视图
-    lazy var bottomView: CFStatusBottomView = CFStatusBottomView()
-    
-    
+
 }
+

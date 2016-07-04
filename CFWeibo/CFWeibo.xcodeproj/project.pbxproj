@@ -47,6 +47,20 @@
 		5F4CA3E81D1A492E007A693A /* UIStroyboard+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA3E71D1A492E007A693A /* UIStroyboard+Extension.swift */; };
 		5F4CA3EA1D1A96E6007A693A /* CFQRCodeCreateVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA3E91D1A96E6007A693A /* CFQRCodeCreateVC.swift */; };
 		5F4CA3EC1D1B8346007A693A /* CFCutImageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA3EB1D1B8346007A693A /* CFCutImageVC.swift */; };
+		5F4CA4561D221FBD007A693A /* FFLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4551D221FBD007A693A /* FFLabel.swift */; };
+		5F4CA47A1D237576007A693A /* CFHomeWebVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4791D237575007A693A /* CFHomeWebVC.swift */; };
+		5F4CA4E41D2A41A2007A693A /* weibo.sql in Resources */ = {isa = PBXBuildFile; fileRef = 5F4CA4E31D2A41A2007A693A /* weibo.sql */; };
+		5F4CA4F21D2A43ED007A693A /* FMDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4E71D2A43ED007A693A /* FMDatabase.m */; };
+		5F4CA4F31D2A43ED007A693A /* FMDatabaseAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4E91D2A43ED007A693A /* FMDatabaseAdditions.m */; };
+		5F4CA4F41D2A43ED007A693A /* FMDatabasePool.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4EB1D2A43ED007A693A /* FMDatabasePool.m */; };
+		5F4CA4F51D2A43ED007A693A /* FMDatabaseQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4ED1D2A43ED007A693A /* FMDatabaseQueue.m */; };
+		5F4CA4F61D2A43ED007A693A /* FMResultSet.m in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4F01D2A43ED007A693A /* FMResultSet.m */; };
+		5F4CA4F71D2A43ED007A693A /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5F4CA4F11D2A43ED007A693A /* Info.plist */; };
+		5F4CA4FB1D2A43F5007A693A /* FMDatabaseAdditionsVariadic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4F91D2A43F5007A693A /* FMDatabaseAdditionsVariadic.swift */; };
+		5F4CA4FC1D2A43F5007A693A /* FMDatabaseVariadic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4FA1D2A43F5007A693A /* FMDatabaseVariadic.swift */; };
+		5F4CA4FE1D2A4410007A693A /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F4CA4FD1D2A4410007A693A /* libsqlite3.tbd */; };
+		5F4CA5001D2A4697007A693A /* SQLiteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA4FF1D2A4697007A693A /* SQLiteManager.swift */; };
+		5F4CA5041D2A4F66007A693A /* CFStatusDAL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA5031D2A4F66007A693A /* CFStatusDAL.swift */; };
 		5F59ECD71CBF8F380044549A /* CFPictureSelectorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F59ECD61CBF8F380044549A /* CFPictureSelectorVC.swift */; };
 		5F6B50C91D0CFE9E00FDB5DD /* CFEmoticonKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6B50C81D0CFE9E00FDB5DD /* CFEmoticonKeyboardView.swift */; };
 		5F6E65EF1CACD364006F16A1 /* CFRefreshControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F6E65EE1CACD364006F16A1 /* CFRefreshControl.swift */; };
@@ -95,7 +109,7 @@
 		5F155A5D1C9FD54A00D755D7 /* CFCommonTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFCommonTools.swift; sourceTree = "<group>"; };
 		5F155A5E1C9FD54A00D755D7 /* CFNetworkTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFNetworkTools.swift; sourceTree = "<group>"; };
 		5F155A601C9FD54A00D755D7 /* UILabel+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
-		5F155A611C9FD54A00D755D7 /* UIView+AutoLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+AutoLayout.swift"; sourceTree = "<group>"; };
+		5F155A611C9FD54A00D755D7 /* UIView+AutoLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+AutoLayout.swift"; path = "../UIView+AutoLayout.swift"; sourceTree = "<group>"; };
 		5F155A651C9FD54A00D755D7 /* CFUserAccountVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFUserAccountVM.swift; sourceTree = "<group>"; };
 		5F155A7D1CA0E2CA00D755D7 /* UIButton+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		5F4CA2DF1D13E39A007A693A /* UINavationBar+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavationBar+Extension.swift"; sourceTree = "<group>"; };
@@ -109,6 +123,26 @@
 		5F4CA3E71D1A492E007A693A /* UIStroyboard+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStroyboard+Extension.swift"; sourceTree = "<group>"; };
 		5F4CA3E91D1A96E6007A693A /* CFQRCodeCreateVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFQRCodeCreateVC.swift; sourceTree = "<group>"; };
 		5F4CA3EB1D1B8346007A693A /* CFCutImageVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFCutImageVC.swift; sourceTree = "<group>"; };
+		5F4CA4551D221FBD007A693A /* FFLabel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FFLabel.swift; sourceTree = "<group>"; };
+		5F4CA4791D237575007A693A /* CFHomeWebVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFHomeWebVC.swift; sourceTree = "<group>"; };
+		5F4CA4E31D2A41A2007A693A /* weibo.sql */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = weibo.sql; sourceTree = "<group>"; };
+		5F4CA4E61D2A43ED007A693A /* FMDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabase.h; sourceTree = "<group>"; };
+		5F4CA4E71D2A43ED007A693A /* FMDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabase.m; sourceTree = "<group>"; };
+		5F4CA4E81D2A43ED007A693A /* FMDatabaseAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseAdditions.h; sourceTree = "<group>"; };
+		5F4CA4E91D2A43ED007A693A /* FMDatabaseAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseAdditions.m; sourceTree = "<group>"; };
+		5F4CA4EA1D2A43ED007A693A /* FMDatabasePool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabasePool.h; sourceTree = "<group>"; };
+		5F4CA4EB1D2A43ED007A693A /* FMDatabasePool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabasePool.m; sourceTree = "<group>"; };
+		5F4CA4EC1D2A43ED007A693A /* FMDatabaseQueue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDatabaseQueue.h; sourceTree = "<group>"; };
+		5F4CA4ED1D2A43ED007A693A /* FMDatabaseQueue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMDatabaseQueue.m; sourceTree = "<group>"; };
+		5F4CA4EE1D2A43ED007A693A /* FMDB.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMDB.h; sourceTree = "<group>"; };
+		5F4CA4EF1D2A43ED007A693A /* FMResultSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FMResultSet.h; sourceTree = "<group>"; };
+		5F4CA4F01D2A43ED007A693A /* FMResultSet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FMResultSet.m; sourceTree = "<group>"; };
+		5F4CA4F11D2A43ED007A693A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F4CA4F91D2A43F5007A693A /* FMDatabaseAdditionsVariadic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FMDatabaseAdditionsVariadic.swift; sourceTree = "<group>"; };
+		5F4CA4FA1D2A43F5007A693A /* FMDatabaseVariadic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FMDatabaseVariadic.swift; sourceTree = "<group>"; };
+		5F4CA4FD1D2A4410007A693A /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		5F4CA4FF1D2A4697007A693A /* SQLiteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteManager.swift; sourceTree = "<group>"; };
+		5F4CA5031D2A4F66007A693A /* CFStatusDAL.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFStatusDAL.swift; sourceTree = "<group>"; };
 		5F59ECD61CBF8F380044549A /* CFPictureSelectorVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFPictureSelectorVC.swift; sourceTree = "<group>"; };
 		5F6B50C81D0CFE9E00FDB5DD /* CFEmoticonKeyboardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFEmoticonKeyboardView.swift; sourceTree = "<group>"; };
 		5F6E65EE1CACD364006F16A1 /* CFRefreshControl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFRefreshControl.swift; sourceTree = "<group>"; };
@@ -138,6 +172,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F4CA4FE1D2A4410007A693A /* libsqlite3.tbd in Frameworks */,
 				3B17FC025FB1F33A30E92E63 /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,6 +183,7 @@
 		52192C2E3771AA4FA359E077 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F4CA4FD1D2A4410007A693A /* libsqlite3.tbd */,
 				0710CC2F836C6E9203263283 /* Pods.framework */,
 			);
 			name = Frameworks;
@@ -169,6 +205,7 @@
 		5F155A411C9FD54A00D755D7 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				5F4CA4E01D2A4174007A693A /* Resource */,
 				5F155A421C9FD54A00D755D7 /* Model */,
 				5F155A621C9FD54A00D755D7 /* ViewModel */,
 				5F155A461C9FD54A00D755D7 /* Module */,
@@ -183,6 +220,7 @@
 				5F106A991CAA633B003BAA2D /* CFStatus.swift */,
 				5F155A441C9FD54A00D755D7 /* CFUser.swift */,
 				5F155A451C9FD54A00D755D7 /* CFUserAccount.swift */,
+				5F4CA5031D2A4F66007A693A /* CFStatusDAL.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -215,6 +253,7 @@
 		5F155A491C9FD54A00D755D7 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				5F4CA4791D237575007A693A /* CFHomeWebVC.swift */,
 				5F155A4A1C9FD54A00D755D7 /* CFHomeTableVC.swift */,
 				5F106AA71CAA7955003BAA2D /* StatusCell */,
 				5F6E65ED1CACD344006F16A1 /* Refresh */,
@@ -268,11 +307,12 @@
 		5F155A5C1C9FD54A00D755D7 /* Tools */ = {
 			isa = PBXGroup;
 			children = (
+				5F4CA4E51D2A43ED007A693A /* fmdb */,
 				5F82E61A1D057DD80060BC9D /* EmoticonKeyboard */,
+				5F155A5F1C9FD54A00D755D7 /* Extension */,
+				5F4CA4551D221FBD007A693A /* FFLabel.swift */,
 				5F155A5D1C9FD54A00D755D7 /* CFCommonTools.swift */,
 				5F155A5E1C9FD54A00D755D7 /* CFNetworkTools.swift */,
-				5F155A611C9FD54A00D755D7 /* UIView+AutoLayout.swift */,
-				5F155A5F1C9FD54A00D755D7 /* Extension */,
 			);
 			path = Tools;
 			sourceTree = "<group>";
@@ -280,6 +320,7 @@
 		5F155A5F1C9FD54A00D755D7 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
+				5F155A611C9FD54A00D755D7 /* UIView+AutoLayout.swift */,
 				5F4CA3721D193EC9007A693A /* String+Regex.swift */,
 				5F4CA3501D19357B007A693A /* NSDate+Extension.swift */,
 				5FDF0A431CBB964C00C759E7 /* UIBarButtonItem+Extension.swift */,
@@ -313,6 +354,44 @@
 				5F4CA3EB1D1B8346007A693A /* CFCutImageVC.swift */,
 			);
 			path = QRCode;
+			sourceTree = "<group>";
+		};
+		5F4CA4E01D2A4174007A693A /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				5F4CA4E31D2A41A2007A693A /* weibo.sql */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		5F4CA4E51D2A43ED007A693A /* fmdb */ = {
+			isa = PBXGroup;
+			children = (
+				5F4CA4FF1D2A4697007A693A /* SQLiteManager.swift */,
+				5F4CA4F81D2A43F5007A693A /* Swift extensions */,
+				5F4CA4E61D2A43ED007A693A /* FMDatabase.h */,
+				5F4CA4E71D2A43ED007A693A /* FMDatabase.m */,
+				5F4CA4E81D2A43ED007A693A /* FMDatabaseAdditions.h */,
+				5F4CA4E91D2A43ED007A693A /* FMDatabaseAdditions.m */,
+				5F4CA4EA1D2A43ED007A693A /* FMDatabasePool.h */,
+				5F4CA4EB1D2A43ED007A693A /* FMDatabasePool.m */,
+				5F4CA4EC1D2A43ED007A693A /* FMDatabaseQueue.h */,
+				5F4CA4ED1D2A43ED007A693A /* FMDatabaseQueue.m */,
+				5F4CA4EE1D2A43ED007A693A /* FMDB.h */,
+				5F4CA4EF1D2A43ED007A693A /* FMResultSet.h */,
+				5F4CA4F01D2A43ED007A693A /* FMResultSet.m */,
+				5F4CA4F11D2A43ED007A693A /* Info.plist */,
+			);
+			path = fmdb;
+			sourceTree = "<group>";
+		};
+		5F4CA4F81D2A43F5007A693A /* Swift extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5F4CA4F91D2A43F5007A693A /* FMDatabaseAdditionsVariadic.swift */,
+				5F4CA4FA1D2A43F5007A693A /* FMDatabaseVariadic.swift */,
+			);
+			path = "Swift extensions";
 			sourceTree = "<group>";
 		};
 		5F59ECD51CBF8F380044549A /* PictureSelector */ = {
@@ -486,8 +565,10 @@
 			files = (
 				5FB1A5041C7C5A6200FD3A40 /* Assets.xcassets in Resources */,
 				5F82E6261D057DD80060BC9D /* Emoticons.bundle in Resources */,
+				5F4CA4F71D2A43ED007A693A /* Info.plist in Resources */,
 				5F4CA3E41D1A4000007A693A /* QRCode.storyboard in Resources */,
 				5F6E65F11CACD3A9006F16A1 /* CFRefreshView.xib in Resources */,
+				5F4CA4E41D2A41A2007A693A /* weibo.sql in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -556,6 +637,7 @@
 				5F155A691C9FD54A00D755D7 /* CFDiscoverTableVC.swift in Sources */,
 				5F4CA32F1D18EE02007A693A /* CFProgressImageView.swift in Sources */,
 				5F59ECD71CBF8F380044549A /* CFPictureSelectorVC.swift in Sources */,
+				5F4CA5041D2A4F66007A693A /* CFStatusDAL.swift in Sources */,
 				5F155A761C9FD54A00D755D7 /* CFCommonTools.swift in Sources */,
 				5F155A6A1C9FD54A00D755D7 /* CFHomeTableVC.swift in Sources */,
 				5F4CA32D1D17EF9B007A693A /* UIView+Extension.swift in Sources */,
@@ -572,12 +654,15 @@
 				5F155A7E1CA0E2CA00D755D7 /* UIButton+Extension.swift in Sources */,
 				5F6E65EF1CACD364006F16A1 /* CFRefreshControl.swift in Sources */,
 				5F155A7C1C9FD54A00D755D7 /* CFUserAccountVM.swift in Sources */,
+				5F4CA4FB1D2A43F5007A693A /* FMDatabaseAdditionsVariadic.swift in Sources */,
 				5F4CA3511D19357B007A693A /* NSDate+Extension.swift in Sources */,
 				5F82E6281D057DD80060BC9D /* CFEmoticonPackageM.swift in Sources */,
 				5F155A6E1C9FD54A00D755D7 /* CFBaseTableVC.swift in Sources */,
 				5F4CA3EA1D1A96E6007A693A /* CFQRCodeCreateVC.swift in Sources */,
 				5F155A681C9FD54A00D755D7 /* CFUserAccount.swift in Sources */,
+				5F4CA4F21D2A43ED007A693A /* FMDatabase.m in Sources */,
 				5F4CA3EC1D1B8346007A693A /* CFCutImageVC.swift in Sources */,
+				5F4CA4F41D2A43ED007A693A /* FMDatabasePool.m in Sources */,
 				5FB8F2161D10224C002DE8AD /* CFPhotoBrowserVC.swift in Sources */,
 				5F4CA3E81D1A492E007A693A /* UIStroyboard+Extension.swift in Sources */,
 				5F82E6251D057DD80060BC9D /* CFEmoticonKeyboardVC.swift in Sources */,
@@ -588,7 +673,9 @@
 				5F155A721C9FD54A00D755D7 /* CFNewFeatureVC.swift in Sources */,
 				5F155A781C9FD54A00D755D7 /* UILabel+Extension.swift in Sources */,
 				5F106A9E1CAA6408003BAA2D /* CFStatusVM.swift in Sources */,
+				5F4CA4561D221FBD007A693A /* FFLabel.swift in Sources */,
 				5F155A701C9FD54A00D755D7 /* CFVisitorLoginView.swift in Sources */,
+				5F4CA4F51D2A43ED007A693A /* FMDatabaseQueue.m in Sources */,
 				5F82E6241D057DD80060BC9D /* CFEmoticonAttachment.swift in Sources */,
 				5F127AFD1CABE1D000B113DC /* UIImage+Extension.swift in Sources */,
 				5F82E62A1D057DD80060BC9D /* CFEmoticonVM.swift in Sources */,
@@ -596,9 +683,14 @@
 				5FDF0A401CB4EA3200C759E7 /* CFComposeVC.swift in Sources */,
 				5F106A9D1CAA6408003BAA2D /* CFStatusListVM.swift in Sources */,
 				5F106AB31CAA8B11003BAA2D /* CFOriginalityStatusCell.swift in Sources */,
+				5F4CA4F61D2A43ED007A693A /* FMResultSet.m in Sources */,
 				5F106AAE1CAA7955003BAA2D /* CFStatusPictureView.swift in Sources */,
+				5F4CA4F31D2A43ED007A693A /* FMDatabaseAdditions.m in Sources */,
 				5F155A741C9FD54A00D755D7 /* CFOAuthVC.swift in Sources */,
 				5F155A751C9FD54A00D755D7 /* CFProfileTableVC.swift in Sources */,
+				5F4CA5001D2A4697007A693A /* SQLiteManager.swift in Sources */,
+				5F4CA4FC1D2A43F5007A693A /* FMDatabaseVariadic.swift in Sources */,
+				5F4CA47A1D237576007A693A /* CFHomeWebVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

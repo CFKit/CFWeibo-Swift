@@ -17,7 +17,7 @@ extension UILabel {
     /// - parameter layoutWidth: 布局宽度，一旦大于 0 就是多行文本
     /// - parameter isBold: 是否加粗
     /// - returns: label
-    convenience init(title: String?, color: UIColor, fontSize: CGFloat, layoutWidth: CGFloat = 0, isBold: Bool = false) {
+    public convenience init(title: String?, color: UIColor, fontSize: CGFloat, layoutWidth: CGFloat = 0, isBold: Bool = false) {
         //  实例化当前对象
         self.init()
         
@@ -33,5 +33,9 @@ extension UILabel {
         sizeToFit()
     }
     
+    public func printText() {
+        print(self.text)
+    }
     
 }
+

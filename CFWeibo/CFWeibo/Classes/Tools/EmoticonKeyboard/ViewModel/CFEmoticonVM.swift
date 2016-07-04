@@ -36,8 +36,6 @@ class CFEmoticonVM {
         //  matchesInString 查找所有的匹配项
         let results = regex.matchesInString(str, options: [], range: NSRange(location: 0, length: (str as NSString).length))
         
-        
-        
         //  准备属性字符串
         let strM = NSMutableAttributedString(string: str)
         
@@ -59,6 +57,9 @@ class CFEmoticonVM {
             }
             
         }
+        strM.removeAttribute(NSFontAttributeName, range: NSRange(location: 0, length: strM.length))
+        //  更新整个字符串的字体
+        strM.addAttribute(NSFontAttributeName, value: font, range: NSRange(location: 0, length: strM.length))
         
         return strM
     }
@@ -149,7 +150,7 @@ class CFEmoticonVM {
             packages.append(CFEmoticonPackageM(dict: infoDict))
         }
         
-        print(packages)
+//        print(packages)
         
     }
 }

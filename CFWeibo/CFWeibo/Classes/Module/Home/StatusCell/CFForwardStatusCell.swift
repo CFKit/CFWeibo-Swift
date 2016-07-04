@@ -16,7 +16,8 @@ class CFForwardStatusCell: CFStatusCell {
     override var statusVM: CFStatusVM? {
         didSet {
             //  微博正文
-            let statusText = statusVM?.status.text ?? ""
+            let statusText = statusVM?.forwardText ?? ""
+            
             forwardLabel.attributedText = CFEmoticonVM.sharedEmoticonVM.emoticonText(statusText, font: forwardLabel.font)
         }
     }
@@ -58,7 +59,17 @@ class CFForwardStatusCell: CFStatusCell {
         return button
     } ()
     /// 转发文字
-    private lazy var forwardLabel = UILabel(title: "", color: UIColor.darkGrayColor(), fontSize: 14, layoutWidth: kScreenWidth - 2 * kStatusCellMargin)
+    private lazy var forwardLabel: FFLabel = {
+        let label = FFLabel()
+        label.textColor = UIColor.darkGrayColor()
+        label.font = UIFont.systemFontOfSize(16)
+        label.preferredMaxLayoutWidth = kScreenWidth - 2 * kStatusCellMargin
+        label.numberOfLines = 0
+        label.labelDelegate = self;
+        
+        return label
+    } ()
+
     
 }
 

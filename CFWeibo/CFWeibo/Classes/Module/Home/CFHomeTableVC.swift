@@ -142,8 +142,18 @@ extension CFHomeTableVC {
 
 //  类似于 OC 分类。同时可以将遵守的协议分离出来
 //  MARK: - 代理回调
-extension CFHomeTableVC {
-
+extension CFHomeTableVC: CFStatusCellDelegate {
+    //  MARK: -- CFStatusCellDelegate
+    func statusCellDidSelectedLinkText(text: String) {
+//        print("超链接文字: \(text)")
+        guard let url = NSURL(string: text) else { return }
+        let vc = CFHomeWebVC()
+        vc.url = url
+        vc.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    //  MARK: -- UITableViewDelegate,UITableViewDataSource
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return statusListVM.statusList.count ?? 0
     }
@@ -152,7 +162,7 @@ extension CFHomeTableVC {
         //  获得可重用 cell 的同时要获得行高
         let statusVM = statusListVM.statusList[indexPath.row]
         let statusCell = tableView.dequeueReusableCellWithIdentifier(statusVM.statusCellIdentifier, forIndexPath: indexPath) as! CFStatusCell
-        
+        statusCell.statusCellDelegate = self
         statusCell.statusVM = statusVM
         
         //  判断当前的 indexpath 是否是驻足的最后一项，如果是开始上拉动画

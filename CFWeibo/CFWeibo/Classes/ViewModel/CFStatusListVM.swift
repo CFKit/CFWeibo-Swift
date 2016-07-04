@@ -34,53 +34,40 @@ class CFStatusListVM: NSObject {
         }
         
         //  RACSignal 在订阅的时候，会对 self 进行强引用，sendCompleted 说明信号完成，会释放对 self 的强引用
-        
         return RACSignal.createSignal({ [weak self] (scriber) -> RACDisposable! in
-            //  网络工具，执行的时候，会对 self 进行强引用，网络结束后，对 self 的引用释放！
-            CFNetworkTools.sharedTools.loadStatus(since_id: since_id, max_id: max_id).subscribeNext({ (result) -> Void in
-                printLog(result)
-                //  1. 获取 result 中的 status 字典数组
-                let dict = result as! [String: AnyObject]
-                guard let array = dict["statuses"] as? [[String: AnyObject]] else
-                {
-                    scriber.sendError(NSError(domain: "", code: -1002, userInfo: ["errorMessage": "返回格式不正确"]))
-                    return
-                }
+            CFStatusDAL.loadStatus(since_id, max_id: max_id, finished: { (array, error) in
                 
-                //  2. 字典转模型(定义一个临时数组)
-                var arrayM = [CFStatusVM]()
-                for dict in array {
-                    arrayM.append(CFStatusVM(status: CFStatus(dict: dict)))
-                }
-                
-                printLog("刷新到 \(arrayM.count) 条数据")
-                
-                self?.cacheWebImage(arrayM) {
-                    if max_id > 0 { //  上拉刷新
-                        self?.statusList += arrayM
-                    } else { // 默认初始刷新，下拉刷新
-                        self?.statusList = arrayM + self!.statusList
+                if (array?.count ?? 0) > 0 {
+                    //  2. 字典转模型(定义一个临时数组)
+                    var arrayM = [CFStatusVM]()
+                    for dict in array! {
+                        arrayM.append(CFStatusVM(status: CFStatus(dict: dict)))
                     }
-                    
-                    //  如果是下拉刷新，提示用户刷新
-                    if since_id > 0 {
-                        //  RAC 是 OC 的。通知订阅者，下拉刷新的数据
-                        scriber.sendNext(arrayM.count)
-                    }
-                    
-                    //printLog(self?.statusList)
-                    scriber.sendCompleted()
-                }
 
-                }, error: { (error) -> Void in
-                    scriber.sendError(error)
-                }, completed: {() -> Void in
+                    self?.cacheWebImage(arrayM, finished: { 
+                        if max_id > 0 { //  上拉刷新
+                            self?.statusList += arrayM
+                        } else { // 默认初始刷新，下拉刷新
+                            self?.statusList = arrayM + self!.statusList
+                        }
+
+                        //  如果是下拉刷新，提示用户刷新
+                        if since_id > 0 {
+                            //  RAC 是 OC 的。通知订阅者，下拉刷新的数据
+                            scriber.sendNext(arrayM.count)
+                        }
+                        //printLog(self?.statusList)
+                        scriber.sendCompleted()
+
+                    })
                     
+                } else if error != nil {
+                    scriber.sendError(error)
+                }
             })
             
             return nil
         })
-        
 
     }
     

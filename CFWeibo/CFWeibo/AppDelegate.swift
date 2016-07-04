@@ -20,9 +20,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //  打印用户账户信息
 //        printLog(UserAccountVM.sharedUserAccount.userAccount)
         //  注册通知(object：监听有哪个对象发出的通知)
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AppDelegate.switchRootVC(_:)), name: CFSwitchRootVCNotification, object: nil)
-        
+
+        SQLiteManager.sharedManager
         setupNetwork()
         setUpAppearance()
         
@@ -101,6 +101,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let cache = NSURLCache(memoryCapacity: 4 * 1024 * 1024, diskCapacity: 20 * 1024 * 1024, diskPath: nil)
         NSURLCache.setSharedURLCache(cache)
         
+    }
+    
+    func applicationDidEnterBackground(application: UIApplication) {
+        CFStatusDAL.clearDatabaseCache()
     }
     
 }
