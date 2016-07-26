@@ -14,6 +14,7 @@ let kPhotoBrowserCellIdentifier = "CFPhotoBrowserCell"
 
 /// 照片浏览器cell 负责显示单张图片
 class CFPhotoBrowserCell: UICollectionViewCell {
+    var hasLoadedImage: Bool = false
     
     var url: NSURL? {
         didSet {
@@ -33,14 +34,15 @@ class CFPhotoBrowserCell: UICollectionViewCell {
                 //  RetryFailed 可以允许失败后重试
                 self.imageView.sd_setImageWithURL(self.url, placeholderImage: nil, options: [SDWebImageOptions.RetryFailed, SDWebImageOptions.RefreshCached]) { (image, error, _, _) in
                     self.indicator.stopAnimating()
-                    
+                    print(self.url)
                     //  判断图像是否下载完成
                     if error != nil {
                         SVProgressHUD.showInfoWithStatus("您的网络不给力")
                         return;
                     }
                     //  执行到此处时表示图片已经加载完成
-                    self .setImagePosition()
+                    self.setScrollViewZoom()
+                    self.setImagePosition()
                 }
 
             }
@@ -50,6 +52,7 @@ class CFPhotoBrowserCell: UICollectionViewCell {
     
     //  根据 ScrollView 的宽度， 计算缩放后的比例
     private func displaySize(image: UIImage) -> CGSize {
+        
         // 1. 图像宽高比
         let scale = image.size.height / image.size.width
         // 2. 计算高度
@@ -58,12 +61,23 @@ class CFPhotoBrowserCell: UICollectionViewCell {
         
         return CGSize(width: w, height: h)
     }
+    
+    //  根据图片大小设置 scrollView 的缩放比例
+    private func setScrollViewZoom() {
+        guard let image = imageView.image else { return; }
+
+        let imageW = image.size.width
+        scrollView.maximumZoomScale = imageW * 3.0 / kScreenWidth
+        scrollView.minimumZoomScale = imageW / kScreenWidth > 1.0 ? 1.0 : imageW / kScreenWidth
+    }
+    
     //  设置图像位置
     private func setImagePosition() {
+        
+        self.hasLoadedImage = true;
         //  如果图像缩放后没有屏幕高，居中
         let size = displaySize(imageView.image!)
         imageView.frame = CGRect(origin: CGPointZero, size: size)
-        
         
         if size.height < scrollView.bounds.height {
             //  短图
@@ -87,7 +101,7 @@ class CFPhotoBrowserCell: UICollectionViewCell {
         scrollView.contentInset = UIEdgeInsetsZero
         scrollView.contentOffset = CGPointZero
         
-        //  重新色织 imageView 的形变属性
+        //  重新设置 imageView 的形变属性
         imageView.transform = CGAffineTransformIdentity
     }
     
@@ -98,11 +112,52 @@ class CFPhotoBrowserCell: UICollectionViewCell {
     lazy var imageView: UIImageView = {
         let iv = UIImageView()
         iv.clipsToBounds = true
+        iv.userInteractionEnabled = true
         
         return iv
     } ()
     /// 菊花
     private lazy var indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
+}
+
+//  MARK: - 触发方法
+extension CFPhotoBrowserCell {
+    func singleTap(recognizer: UITapGestureRecognizer) {
+        print("单击事件")
+        
+    }
+    
+    func doubleTap(recognizer: UITapGestureRecognizer) {
+        if !self.hasLoadedImage { return }
+        
+        let touchPoint = recognizer.locationInView(self);
+        if (self.scrollView.zoomScale <= 1.0) {
+            let imageViewX = imageView.frame.origin.x
+            let imageViewY = imageView.frame.origin.y
+            let imageViewW = imageView.frame.size.width
+            let imageViewH = imageView.frame.size.height
+            //  需要放大的点
+            let scaleX = touchPoint.x + self.scrollView.contentOffset.x
+            let scaleY = touchPoint.y + self.scrollView.contentOffset.y
+            let scale = imageViewW > imageViewH ? kScreenHeight / imageViewH : scrollView.maximumZoomScale
+            //  缩放成功后 对应原图的大小
+            let nowW = kScreenWidth / scale
+            let nowH = kScreenHeight / scale
+            
+            let rect = CGRect(x: scaleX - nowW * 0.5, y: scaleY - nowH * 0.5, width: nowW, height: nowH)
+            
+            let view = UIView(frame: rect)
+            self.addSubview(view)
+            view.backgroundColor = UIColor ( red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5 )
+            self.scrollView.zoomToRect(rect, animated: true)
+            
+        } else {
+            self.scrollView.setZoomScale(1.0, animated: true)
+        }
+        
+    }
+    
+    
 }
 
 //  MARK: - UIScrollViewDelegate
@@ -122,8 +177,9 @@ extension CFPhotoBrowserCell: UIScrollViewDelegate {
      *  bounds * transform => frmae
      */
     func scrollViewDidZoom(scrollView: UIScrollView) {
-//        print(imageView)
+        scrollView.contentOffset = CGPointZero
         
+        self.imageView.center = self.centerOfScrollViewContent(scrollView)
     }
     
     /// 缩放完成后会被调用
@@ -133,18 +189,33 @@ extension CFPhotoBrowserCell: UIScrollViewDelegate {
     /// - parameter scale:      scale - 缩放完成的比例
     func scrollViewDidEndZooming(scrollView: UIScrollView, withView view: UIView?, atScale scale: CGFloat) {
         
-//        UIView.animateWithDuration(0.1) {
-//            UIView.setAnimationCurve(UIViewAnimationCurve.init(rawValue: 7)!)
-//            self.imageView.center = scrollView.center
-//        }
-//        
-//        print(view)
-//        print(scale)
+        print("image 大小: \(imageView.image!.size) \(scrollView.contentSize)")
+
     }
 
+    /// 返回缩放过程中心点
+    private func centerOfScrollViewContent(scrollView: UIScrollView) -> CGPoint {
+        let offsetX = scrollView.bounds.size.width > scrollView.contentSize.width ? (scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5 : 0.0
+        let offsetY = scrollView.bounds.size.height > scrollView.contentSize.height ? (scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5 : 0.0
+        
+        let actualCenter = CGPoint(x: scrollView.contentSize.width * 0.5 + offsetX,
+                                   y: scrollView.contentSize.height * 0.5 + offsetY)
+        return actualCenter
+    }
+    
 }
 
 extension CFPhotoBrowserCell {
+    
+    internal override func layoutSubviews() {
+        super.layoutSubviews()
+        self.adjustImageView()
+    }
+    
+    private func adjustImageView() {
+        
+    }
+    
     private func setupUI() {
         //  1. 添加控件
         contentView.addSubview(scrollView)
@@ -165,9 +236,18 @@ extension CFPhotoBrowserCell {
     private func prepareScrollView() {
         //  设置代理
         scrollView.delegate = self
-        //  设置最大最小缩放比例
-        scrollView.minimumZoomScale = 0.5
-        scrollView.maximumZoomScale = 2
         
+        let singleTap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(CFPhotoBrowserCell.singleTap(_:)))
+        singleTap.numberOfTapsRequired = 1
+        singleTap.delaysTouchesBegan = true
+        scrollView.addGestureRecognizer(singleTap)
+        
+        let doubleTap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(CFPhotoBrowserCell.doubleTap(_:)))
+        doubleTap.numberOfTapsRequired = 2
+        doubleTap.delaysTouchesBegan = true
+        scrollView.addGestureRecognizer(doubleTap)
+        //  只响应一个手势
+        singleTap.requireGestureRecognizerToFail(doubleTap)
     }
+    
 }

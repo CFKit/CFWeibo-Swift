@@ -22,6 +22,7 @@ class CFHomeWebVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if url != nil {
+            url = NSURL(string: "http://localhost:8080/struts2-06")
             webView.loadRequest(NSURLRequest(URL: url!))
         }
     }
@@ -37,6 +38,14 @@ extension CFHomeWebVC: UIWebViewDelegate {
     }
     func webViewDidFinishLoad(webView: UIWebView) {
         SVProgressHUD.dismiss()
+    }
+    
+    func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+        print(request)
+        
+        
+        
+        return true
     }
 }
 

@@ -9,7 +9,7 @@
 import UIKit
 import SVProgressHUD
 
-private let kStatusTextMaxLength = 100
+private let kStatusTextMaxLength = 200
 
 /// 撰写微博
 class CFComposeVC: UIViewController, UITextViewDelegate, CFPictureSelectorVCDelegate {

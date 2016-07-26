@@ -139,7 +139,6 @@ extension CFHomeTableVC {
 
 }
 
-
 //  类似于 OC 分类。同时可以将遵守的协议分离出来
 //  MARK: - 代理回调
 extension CFHomeTableVC: CFStatusCellDelegate {
