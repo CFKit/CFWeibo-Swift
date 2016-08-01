@@ -27,6 +27,21 @@ class CFStatusPictureView: UICollectionView {
         }
     }
     
+    var images: [UIImage]? {
+        guard let urls = statusVM?.thumbnailURLs else { return nil }
+        var imgs = [UIImage]()
+        for index in 0..<urls.count {
+            let url = urls[index]
+            
+            if let image = SDWebImageManager.sharedManager().imageCache.imageFromDiskCacheForKey(url.absoluteString) {
+                imgs.append(image)
+            } else {
+                imgs.append(UIImage())
+            }
+        }
+        return imgs
+    }
+    
     var imageContentMode: UIViewContentMode = UIViewContentMode.ScaleAspectFill
     
     override func sizeThatFits(size: CGSize) -> CGSize {
@@ -106,7 +121,7 @@ extension CFStatusPictureView: UICollectionViewDataSource, UICollectionViewDeleg
         
         cell.imageURL = statusVM!.bmiddleURLs![indexPath.row]
         cell.imageContentMode = imageContentMode
-
+        
         return cell
     }
 
@@ -116,6 +131,8 @@ extension CFStatusPictureView: UICollectionViewDataSource, UICollectionViewDeleg
          object: 发送的对象，可以传递一个数值，也可以是自己
          userInfo: 可选字典，可以传递多个数值
          */
+        
+        
         NSNotificationCenter.defaultCenter().postNotificationName(kStatusPictureViewSelectedPhotoNotification, object: self, userInfo: [kStatusPictureViewSelectedPhotoIndexPathKey: indexPath, kStatusPictureViewSelectedPhotoURLsKey: statusVM!.originalURLs!])
         
 //        let rect = screenRect(indexPath)

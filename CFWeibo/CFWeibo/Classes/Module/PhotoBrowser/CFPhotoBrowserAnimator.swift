@@ -18,10 +18,12 @@ class CFPhotoBrowserAnimator: NSObject, UIViewControllerTransitioningDelegate {
     //  目标位置
     var toRect = CGRectZero
     
+    var placeholderImage: UIImage?
+    
     var url: NSURL?
     
-    lazy var imageView: CFProgressImageView = {
-        let iv = CFProgressImageView()
+    lazy var imageView: UIImageView = {
+        let iv = UIImageView()
         iv.contentMode = UIViewContentMode.ScaleAspectFill
         iv.clipsToBounds = true
         return iv
@@ -30,11 +32,12 @@ class CFPhotoBrowserAnimator: NSObject, UIViewControllerTransitioningDelegate {
     /// 首页视图控制器中的配图视图 - 本事上是 homevc 的 cell 对其进行强引用
     weak var picView: CFStatusPictureView?
     
-    func prepareAnimator(fromRect: CGRect, toRect: CGRect, url: NSURL, picView: CFStatusPictureView) {
+    func prepareAnimator(fromRect: CGRect, toRect: CGRect, url: NSURL, placeholderImage: UIImage?, picView: CFStatusPictureView) {
         self.fromRect = fromRect
         self.toRect = toRect
         self.url = url
         self.picView = picView
+        self.placeholderImage = placeholderImage
     }
     
     /// 返回提供转场动画的对象
@@ -85,53 +88,30 @@ extension CFPhotoBrowserAnimator: UIViewControllerAnimatedTransitioning {
             原因：一般程序不会跟踪进度，进度回调的频率相对较高。
                  异步回调，能够价格低对主线程的压力
          */
-        
-        imageView.sd_setImageWithURL(url, placeholderImage: nil, options: [SDWebImageOptions.RetryFailed], progress: { (current, total) in
-//                print("\(current) - \(total) - \(NSThread.currentThread())")
-                self.imageView.progress = CGFloat(current) / CGFloat(total)
-            }) { (_, error, _, _) in
-                //  判断是否有错误
-                if error != nil {
-                    printLog(error, logError: true)
-                    transitionContext.completeTransition(false)
-                    return
-                }
-                
-                //  3. 图像下载完成之后，再显示动画
-                UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: {
-                    backView.backgroundColor = UIColor.blackColor()
-                    self.imageView.frame = self.toRect
-                    }, completion: { (_) in
-                        //  4. 将目标视图添加到容器视图
-                        let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
-                        transitionContext.containerView()?.addSubview(toView)
-                        //  将 imageView 从界面上移除
-                        backView.removeFromSuperview()
-                        //  声明动画完成
-                        transitionContext.completeTransition(true)
-                        
-                })
-                
+        imageView.sd_setImageWithURL(url, placeholderImage: placeholderImage, options: [SDWebImageOptions.RetryFailed], progress: nil) { (_, error, _, _) in
+            //  判断是否有错误
+            if error != nil {
+                printLog(error, logError: true)
+                transitionContext.completeTransition(false)
+                return
+            }
+            
+            //  3. 图像下载完成之后，再显示动画
+            UIView.animateWithDuration(self.transitionDuration(transitionContext), animations: {
+                backView.backgroundColor = UIColor.blackColor()
+                self.imageView.frame = self.toRect
+                }, completion: { (_) in
+                    //  4. 将目标视图添加到容器视图
+                    let toView = transitionContext.viewForKey(UITransitionContextToViewKey)!
+                    transitionContext.containerView()?.addSubview(toView)
+                    //  将 imageView 从界面上移除
+                    backView.removeFromSuperview()
+                    //  声明动画完成
+                    transitionContext.completeTransition(true)
+                    
+            })
+
         }
-//        //  实现展现动画
-//        let toView = transitionContext.viewForKey(UITransitionContextToViewKey)
-//        toView?.alpha = 0
-//        //  获得容器视图 装展现的视图
-//        let containerView = transitionContext.containerView()
-//        
-//        containerView?.addSubview(toView!)
-//        UIView.animateWithDuration(transitionDuration(transitionContext)) {
-//            toView?.alpha = 1.0
-//        }
-//        
-//        UIView.animateWithDuration(transitionDuration(transitionContext), animations: {
-//            toView?.alpha = 1.0
-//            
-//        }) { (_) in
-//            //  转场动画结束后，一定要声明
-//            transitionContext.completeTransition(true)
-//            
-//        }
 
     }
     

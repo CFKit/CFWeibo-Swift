@@ -14,6 +14,8 @@ let kPhotoMoreOperations = ["取消", "保存图片", "转发微博", "赞"]
 class CFPhotoBrowserVC: UIViewController {
     /// 照片 URL 数组
     var urls: [NSURL]
+    /// 占位图
+    var placeholderImages: [UIImage]?
     /// 用户选中照片索引
     var selectedIndexPath: NSIndexPath
     
@@ -30,8 +32,9 @@ class CFPhotoBrowserVC: UIViewController {
     /// 构造函数
     ///
     /// 简化外部调用，可以不适用可选属性，避免后续解包问题
-    init(urls: [NSURL], indexPath: NSIndexPath) {
+    init(urls: [NSURL], placeholderImages: [UIImage]?, indexPath: NSIndexPath) {
         self.urls = urls
+        self.placeholderImages = placeholderImages
         self.selectedIndexPath = indexPath
         super.init(nibName: nil, bundle: nil)  
     }

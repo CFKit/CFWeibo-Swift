@@ -16,10 +16,13 @@ let kPhotoBrowserCellIdentifier = "CFPhotoBrowserCell"
 class CFPhotoBrowserCell: UICollectionViewCell {
     var hasLoadedImage: Bool = false
     
+    var newContentOffset: CGPoint = CGPointZero
+    
+    var placeholderImage: UIImage?
+    
     var url: NSURL? {
         didSet {
             resetScrollView()
-            
             //  打开指示器
             indicator.startAnimating()
             imageView.image = nil
@@ -30,11 +33,11 @@ class CFPhotoBrowserCell: UICollectionViewCell {
             /// dispatch_time_t  从什么时候开始，持续多久
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0 * Int64(NSEC_PER_SEC)), dispatch_get_main_queue()) {
                 //  之前 imageView 没有指定大小
-                //  RefreshCached 如果服务器的图像变化，而本地的图像是之前的图像，使用此选项，会更新服务器的图片。GET 方法能够缓存，如果服务器返回的状态码是 304，表示内容没有变化，否则使用服务器返回的图片
+                //  RefreshCached 如果服务器的图像变化，而本地的图像是之前的图像，使用此选项，会更新服务器的图片。GET 方法能够缓存，如果服务器返回的状态码是 304，表示内容没有变化，否则使用服务器返回的图片  RefreshCached -> 会回调两次（原因不太清楚）
                 //  RetryFailed 可以允许失败后重试
-                self.imageView.sd_setImageWithURL(self.url, placeholderImage: nil, options: [SDWebImageOptions.RetryFailed, SDWebImageOptions.RefreshCached]) { (image, error, _, _) in
+                self.imageView.sd_setImageWithURL(self.url, placeholderImage: self.placeholderImage, options: [SDWebImageOptions.RetryFailed]) { (image, error, _, _) in
+                    print("+++++++++++++++++")
                     self.indicator.stopAnimating()
-                    print(self.url)
                     //  判断图像是否下载完成
                     if error != nil {
                         SVProgressHUD.showInfoWithStatus("您的网络不给力")
@@ -67,7 +70,14 @@ class CFPhotoBrowserCell: UICollectionViewCell {
         guard let image = imageView.image else { return; }
 
         let imageW = image.size.width
-        scrollView.maximumZoomScale = imageW * 3.0 / kScreenWidth
+        let imageH = image.size.height
+        /*
+         image宽度大于高度时，
+            最大缩放比例为 屏幕高度/iamge的高度，否则为 image长宽的三倍(最小为1)
+         
+         */
+        
+        scrollView.maximumZoomScale = imageW > imageH ? kScreenHeight * imageW / (imageH * kScreenWidth) : (imageW * 3 > kScreenWidth ? imageW * 3.0 / kScreenWidth : 1.0)
         scrollView.minimumZoomScale = imageW / kScreenWidth > 1.0 ? 1.0 : imageW / kScreenWidth
     }
     
@@ -132,27 +142,65 @@ extension CFPhotoBrowserCell {
         
         let touchPoint = recognizer.locationInView(self);
         if (self.scrollView.zoomScale <= 1.0) {
-            let imageViewX = imageView.frame.origin.x
             let imageViewY = imageView.frame.origin.y
             let imageViewW = imageView.frame.size.width
             let imageViewH = imageView.frame.size.height
+            
             //  需要放大的点
-            let scaleX = touchPoint.x + self.scrollView.contentOffset.x
-            let scaleY = touchPoint.y + self.scrollView.contentOffset.y
             let scale = imageViewW > imageViewH ? kScreenHeight / imageViewH : scrollView.maximumZoomScale
-            //  缩放成功后 对应原图的大小
-            let nowW = kScreenWidth / scale
-            let nowH = kScreenHeight / scale
             
-            let rect = CGRect(x: scaleX - nowW * 0.5, y: scaleY - nowH * 0.5, width: nowW, height: nowH)
-            
-            let view = UIView(frame: rect)
-            self.addSubview(view)
-            view.backgroundColor = UIColor ( red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5 )
-            self.scrollView.zoomToRect(rect, animated: true)
-            
+            //  判断 - 当放大后的高度不足频幕高度时
+            if (imageViewH * scale < kScreenHeight) {  //  极端情况，图片不清楚时
+                //  放大区域的宽和高
+                let nowW = imageViewW / scale
+                let nowH = imageViewH
+                
+                //  根据点击的点确定放大区域
+                let originX: CGFloat
+                if touchPoint.x < nowW * 0.5 {
+                    originX = 0
+                } else if touchPoint.x + nowW * 0.5 > kScreenWidth {
+                    originX = kScreenWidth - nowW
+                } else {
+                    originX = touchPoint.x - 0.5 * nowW
+                }
+                let rect = CGRect(x: originX, y: imageViewY, width: nowW, height: nowH)
+                scrollView.zoomToRect(rect, animated: true)
+                scrollView.setContentOffset(CGPoint(x: rect.origin.x * scale, y: (rect.origin.y - imageViewY) * scale), animated: true)
+            } else {
+                //  缩放成功后 对应原图的大小
+                let nowW = kScreenWidth / scale
+                let nowH = kScreenHeight / scale
+                
+                //  根据点击的点确定放大区域
+                let originX: CGFloat
+                if touchPoint.x < nowW * 0.5 {
+                    originX = 0
+                } else if touchPoint.x + nowW * 0.5 > kScreenWidth {
+                    originX = kScreenWidth - nowW
+                } else {
+                    originX = touchPoint.x - 0.5 * nowW
+                }
+                
+                let originY: CGFloat
+                if touchPoint.y - nowH * 0.5 < imageViewY {
+                    originY = imageViewY
+                } else if touchPoint.y + nowH * 0.5 > imageViewY + imageViewH {
+                    originY = imageViewY + imageViewH - nowH
+                } else {
+                    originY = touchPoint.y - nowH * 0.5
+                }
+                
+                let rect = CGRect(x: originX, y: originY, width: nowW, height: nowH)
+                let offset = CGPoint(x: rect.origin.x * scale, y: (rect.origin.y - imageViewY) * scale)
+                scrollView.zoomToRect(rect, animated: true)
+                scrollView.setContentOffset(offset, animated: true)
+
+            }
         } else {
-            self.scrollView.setZoomScale(1.0, animated: true)
+            scrollView.setZoomScale(1.0, animated: true)
+            scrollView.setContentOffset(CGPointZero, animated: true)
+            print("还原")
         }
         
     }
@@ -177,7 +225,6 @@ extension CFPhotoBrowserCell: UIScrollViewDelegate {
      *  bounds * transform => frmae
      */
     func scrollViewDidZoom(scrollView: UIScrollView) {
-        scrollView.contentOffset = CGPointZero
         
         self.imageView.center = self.centerOfScrollViewContent(scrollView)
     }
@@ -188,13 +235,13 @@ extension CFPhotoBrowserCell: UIScrollViewDelegate {
     /// - parameter view:       view - 被缩放的视图
     /// - parameter scale:      scale - 缩放完成的比例
     func scrollViewDidEndZooming(scrollView: UIScrollView, withView view: UIView?, atScale scale: CGFloat) {
-        
+        print("移动完成后偏移量: \(scrollView.contentOffset)")
         print("image 大小: \(imageView.image!.size) \(scrollView.contentSize)")
-
     }
 
     /// 返回缩放过程中心点
     private func centerOfScrollViewContent(scrollView: UIScrollView) -> CGPoint {
+        
         let offsetX = scrollView.bounds.size.width > scrollView.contentSize.width ? (scrollView.bounds.size.width - scrollView.contentSize.width) * 0.5 : 0.0
         let offsetY = scrollView.bounds.size.height > scrollView.contentSize.height ? (scrollView.bounds.size.height - scrollView.contentSize.height) * 0.5 : 0.0
         

@@ -123,15 +123,17 @@ extension CFHomeTableVC {
             return
         }
         
+        
         //  Modal 展现，默认会将上级视图
-        let vc = CFPhotoBrowserVC(urls: urls, indexPath: indexPath)
+        let vc = CFPhotoBrowserVC(urls: urls, placeholderImages: picView.images, indexPath: indexPath)
         //  这两句代码，可以保证原控制器不会被移除
         //  1. 指定动画的提供者 transitioning - 转场，从一个界面跳转到另外一个界面的动画效果
         vc.transitioningDelegate = self.photoBrowserAnimator
         //  2. 指定 modal 展现样式是自定义
         vc.modalPresentationStyle = UIModalPresentationStyle.Custom
         //  3. 计算位置
-        self.photoBrowserAnimator.prepareAnimator(picView.screenRect(indexPath), toRect: picView.fullScreenRect(indexPath), url: urls[indexPath.item], picView: picView)
+        
+        self.photoBrowserAnimator.prepareAnimator(picView.screenRect(indexPath), toRect: picView.fullScreenRect(indexPath), url: urls[indexPath.item], placeholderImage: picView.images![indexPath.item], picView: picView)
         //  这里会对 self 强引用，进行copy。下面的deinit不会被执行到。
         self.presentViewController(vc, animated: true, completion: nil)
 

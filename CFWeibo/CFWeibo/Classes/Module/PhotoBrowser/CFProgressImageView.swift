@@ -28,7 +28,7 @@ class CFProgressImageView: UIImageView {
     
     /// 在 imageView 中，drawRect 函数不会被调用到
     
-    
+
     /// 类中类 专供 CFProgressImageView 使用
     private class CFProgressView: UIView {
         //  进度数值 0-1
