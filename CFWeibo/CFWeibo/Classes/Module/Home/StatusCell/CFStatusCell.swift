@@ -12,11 +12,11 @@ let kStatusCellMargin: CGFloat = 12
 /// 头像大小
 let kStatusIconWidth: CGFloat = 35
 
-let kScreenBounds: CGRect = UIScreen.mainScreen().bounds
+let kScreenBounds: CGRect = UIScreen.main.bounds
 /// 屏幕宽度
-let kScreenWidth: CGFloat = UIScreen.mainScreen().bounds.width
+let kScreenWidth: CGFloat = UIScreen.main.bounds.width
 /// 屏幕高度
-let kScreenHeight: CGFloat = UIScreen.mainScreen().bounds.height
+let kScreenHeight: CGFloat = UIScreen.main.bounds.height
 /// 微博图片默认大小
 let kStatusPictureItemWidth: CGFloat = 112
 /// 微博图片默认间距
@@ -29,7 +29,7 @@ let kStatusPictureMaxWidth = kStatusPictureMaxCount * (kStatusPictureItemWidth +
 
 protocol CFStatusCellDelegate: NSObjectProtocol {
     
-    func statusCellDidSelectedLinkText(text: String)
+    func statusCellDidSelectedLinkText(_ text: String)
 }
 
 /// 微博 cell
@@ -68,18 +68,18 @@ class CFStatusCell: UITableViewCell {
     /// - parameter viewModel: viewModel
     ///
     /// - returns: 行高
-    func rowHeitht(viewModel: CFStatusVM) -> CGFloat {
+    func rowHeitht(_ viewModel: CFStatusVM) -> CGFloat {
         //  设置视图模型 - 会调用模型的 didset
         statusVM = viewModel
         //  更新约束
         layoutIfNeeded()
         
-        return CGRectGetMaxY(bottomView.frame)
+        return bottomView.frame.maxY
     }
     
     override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        selectionStyle = UITableViewCellSelectionStyle.None
+        selectionStyle = UITableViewCellSelectionStyle.none
         
         setupUI()
         
@@ -91,12 +91,12 @@ class CFStatusCell: UITableViewCell {
     
     //  MARK: - 懒加载控件
     //  1. 顶部视图
-    private lazy var topView: CFStatusTopView = CFStatusTopView()
+    fileprivate lazy var topView: CFStatusTopView = CFStatusTopView()
     //  2. 文本视图
     lazy var contentLabel: FFLabel = {
         let label = FFLabel()
-        label.textColor = UIColor.darkGrayColor()
-        label.font = UIFont.systemFontOfSize(17)
+        label.textColor = UIColor.darkGray
+        label.font = UIFont.systemFont(ofSize: 17)
         label.preferredMaxLayoutWidth = kScreenWidth - 2 * kStatusCellMargin
         label.numberOfLines = 0
         label.labelDelegate = self
@@ -114,7 +114,7 @@ class CFStatusCell: UITableViewCell {
 
 //  MARK: - 代理实现
 extension CFStatusCell: FFLabelDelegate {
-    func labelDidSelectedLinkText(label: FFLabel, text: String) {
+    func labelDidSelectedLinkText(_ label: FFLabel, text: String) {
         //  判断 text 是否是 http 链接
         if text.hasPrefix("http://") {
             statusCellDelegate?.statusCellDidSelectedLinkText(text)
@@ -128,7 +128,7 @@ extension CFStatusCell: FFLabelDelegate {
 extension CFStatusCell {
     func setupUI() {
         //  顶部分割视图
-        backgroundColor = UIColor.whiteColor()
+        backgroundColor = UIColor.white
         let topSepView = UIView()
         topSepView.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
         
@@ -140,12 +140,12 @@ extension CFStatusCell {
         
         //  1> 顶部分割视图
         topSepView.ff_AlignInner(
-            type: ff_AlignType.TopLeft,
+            type: ff_AlignType.topLeft,
             referView: contentView,
             size: CGSize(width: kScreenWidth, height: 10))
         //  2> 顶部视图
         topView.ff_AlignVertical(
-            type: ff_AlignType.BottomLeft,
+            type: ff_AlignType.bottomLeft,
             referView: topSepView,
             size: CGSize(width: kScreenWidth, height: kStatusIconWidth + kStatusCellMargin))
         
@@ -153,7 +153,7 @@ extension CFStatusCell {
         
         //  3> 文本标签
         contentLabel.ff_AlignVertical(
-            type: ff_AlignType.BottomLeft,
+            type: ff_AlignType.bottomLeft,
             referView: topView, size: nil,
             offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
         
@@ -170,7 +170,7 @@ extension CFStatusCell {
         
         //  5> 底部视图
         bottomView.ff_AlignVertical(
-            type: ff_AlignType.BottomLeft,
+            type: ff_AlignType.bottomLeft,
             referView: pictureView,
             size: CGSize(width: kScreenWidth, height: 34),
             offset: CGPoint(x: -kStatusCellMargin, y: kStatusCellMargin))

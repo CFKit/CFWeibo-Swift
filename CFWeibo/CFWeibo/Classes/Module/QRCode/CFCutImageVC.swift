@@ -24,7 +24,7 @@ class CFCutImageVC: UIViewController {
         }
         
         cutView.layer.borderWidth = 1
-        cutView.layer.borderColor = UIColor.lightGrayColor().CGColor
+        cutView.layer.borderColor = UIColor.lightGray.cgColor
     
         
     }

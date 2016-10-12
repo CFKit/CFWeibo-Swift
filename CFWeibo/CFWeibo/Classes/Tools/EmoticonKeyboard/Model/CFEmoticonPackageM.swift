@@ -58,7 +58,7 @@ class CFEmoticonPackageM: NSObject {
     
     override var description: String {
         let keys = ["id", "group_name_cn", "emoticons"]
-        return dictionaryWithValuesForKeys(keys).description
+        return dictionaryWithValues(forKeys: keys).description
     }
 
 }

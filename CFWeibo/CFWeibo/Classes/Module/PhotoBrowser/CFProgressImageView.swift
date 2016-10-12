@@ -16,13 +16,13 @@ class CFProgressImageView: UIImageView {
         }
     }
     
-    private lazy var progressView: CFProgressView = {
+    fileprivate lazy var progressView: CFProgressView = {
         let pv = CFProgressView()
         //  添加控件
         self.addSubview(pv)
         //  设置大小
         pv.frame = self.bounds
-        pv.backgroundColor = UIColor.clearColor()
+        pv.backgroundColor = UIColor.clear
         return pv
     }()
     
@@ -30,7 +30,7 @@ class CFProgressImageView: UIImageView {
     
 
     /// 类中类 专供 CFProgressImageView 使用
-    private class CFProgressView: UIView {
+    fileprivate class CFProgressView: UIView {
         //  进度数值 0-1
         var progress: CGFloat = 0 {
             didSet {
@@ -40,7 +40,7 @@ class CFProgressImageView: UIImageView {
         
         //  rect - view.bounds
         //  drawRect 一旦被调用，所有的内容都会重新被绘制
-        private override func drawRect(rect: CGRect) {
+        fileprivate override func draw(_ rect: CGRect) {
 //            printLog("\(rect) - \(progress)")
             
             if progress >= 1 {
@@ -62,9 +62,9 @@ class CFProgressImageView: UIImageView {
             let path = UIBezierPath(arcCenter: center, radius: r, startAngle: start, endAngle: end, clockwise: true)
             
             //  增加指向圆心的路径
-            path.addLineToPoint(center)
+            path.addLine(to: center)
             //  关闭路劲，产生一个扇形
-            path.closePath()
+            path.close()
             
             //  设置属性
 //            path.lineWidth = 10;

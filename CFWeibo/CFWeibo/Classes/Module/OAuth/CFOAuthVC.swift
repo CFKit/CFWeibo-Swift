@@ -12,30 +12,30 @@ import SVProgressHUD
 //  OAuth 授权控制器
 class CFOAuthVC: UIViewController, UIWebViewDelegate {
 
-    private lazy var webView = UIWebView()
+    fileprivate lazy var webView = UIWebView()
         
     override func loadView() {
         //  跟视图就是 webView
         view = webView
         title = "登陆新浪微博"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "关闭", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(CFOAuthVC.close))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "自动填充", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(CFOAuthVC.autoFill))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "关闭", style: UIBarButtonItemStyle.plain, target: self, action: #selector(CFOAuthVC.close))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "自动填充", style: UIBarButtonItemStyle.plain, target: self, action: #selector(CFOAuthVC.autoFill))
     }
     
-    @objc private func close () {
+    @objc fileprivate func close () {
         SVProgressHUD.dismiss()
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
-    @objc private func closeBlock(flag: Bool, completion: (() -> Void)?) {
+    @objc fileprivate func closeBlock(_ flag: Bool, completion: (() -> Void)?) {
         SVProgressHUD.dismiss()
-        dismissViewControllerAnimated(flag, completion: completion)
+        dismiss(animated: flag, completion: completion)
     }
     
-    @objc private func autoFill() {
+    @objc fileprivate func autoFill() {
         let js = "document.getElementById('userId').value = 'chengf_0224@163.com';" + "document.getElementById('passwd').value = 'Cf19910224'"
         //  执行 js 脚本
-        webView.stringByEvaluatingJavaScriptFromString(js)
+        webView.stringByEvaluatingJavaScript(from: js)
     }
 
     
@@ -43,20 +43,20 @@ class CFOAuthVC: UIViewController, UIWebViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor.whiteColor()
+        view.backgroundColor = UIColor.white
         
-        webView.loadRequest(NSURLRequest(URL: CFNetworkTools.sharedTools.oauthUrl))
+        webView.loadRequest(URLRequest(url: CFNetworkTools.sharedTools.oauthUrl as URL))
         
         webView.delegate = self
     }
     
-    func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        let urlString = request.URL!.absoluteString;
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+        let urlString = request.url!.absoluteString;
 
         if urlString.hasPrefix(CFNetworkTools.sharedTools.redirectUri) {
             //  query 是 URL 中 ? 后面的内容 检查字符串判断是否有 'code='
-            if let query = request.URL!.query where query.hasPrefix("code=") {
-                let code = query.substringFromIndex("code=".endIndex)
+            if let query = request.url!.query , query.hasPrefix("code=") {
+                let code = query.substring(from: "code=".endIndex)
 //                printLog("授权码 \(code)")
                 //  调用网络方法，获取 token
                 //      1. 服务端会设置 token 的有效期 。 开发者：5年。普通用户：3天。
@@ -69,7 +69,7 @@ class CFOAuthVC: UIViewController, UIWebViewDelegate {
                     }, completed: { () -> Void in
                         
                         self.closeBlock(false, completion: { () -> Void in
-                            NSNotificationCenter.defaultCenter().postNotificationName(CFSwitchRootVCNotification, object: "CFWelcomeVC")
+                            NotificationCenter.default.post(name: CFSwitchRootVCNotification, object: "CFWelcomeVC")
                         })
                         
                 })
@@ -84,11 +84,11 @@ class CFOAuthVC: UIViewController, UIWebViewDelegate {
         return true
     }
 
-    func webViewDidStartLoad(webView: UIWebView) {
+    func webViewDidStartLoad(_ webView: UIWebView) {
         SVProgressHUD.show()
     }
     
-    func webViewDidFinishLoad(webView: UIWebView) {
+    func webViewDidFinishLoad(_ webView: UIWebView) {
         SVProgressHUD.dismiss()
     }
 }

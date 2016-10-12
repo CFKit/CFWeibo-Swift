@@ -16,16 +16,16 @@ class CFStatusTopView: UIView {
         didSet {
             //  设置界面属性
             
-            iconView.sd_setImageWithURL(statusVM?.userIconURL)
+            iconView.sd_setImage(with: statusVM?.userIconURL as URL!)
             
             nameLabel.text = statusVM?.status.user?.name
 
             memberImageView.image = statusVM?.levelImage
 
             vipImageView.image = statusVM?.userVipImage
-            vipImageView.hidden = statusVM?.userVipImage == nil ?  true : false
+            vipImageView.isHidden = statusVM?.userVipImage == nil ?  true : false
             
-            timeLabel.text = NSDate.sinaDate(statusVM?.status.created_at ?? "")?.dateDescription
+            timeLabel.text = Date.sinaDate(statusVM?.status.created_at ?? "")?.dateDescription
             sourceLabel.text = statusVM?.status.source
         }
     }
@@ -40,8 +40,8 @@ class CFStatusTopView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI() {
-        backgroundColor = UIColor.whiteColor()
+    fileprivate func setupUI() {
+        backgroundColor = UIColor.white
         //  1. 添加控件
         addSubview(iconView)
         addSubview(nameLabel)
@@ -51,30 +51,30 @@ class CFStatusTopView: UIView {
         addSubview(vipImageView)
         //  2. 自动布局
         let offset = CGPoint(x: kStatusCellMargin, y: 0)
-        iconView.ff_AlignInner(type: ff_AlignType.TopLeft, referView: self, size: CGSize(width: kStatusIconWidth, height: kStatusIconWidth), offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
-        nameLabel.ff_AlignHorizontal(type: ff_AlignType.TopRight, referView: iconView, size: nil, offset: offset)
-        memberImageView.ff_AlignHorizontal(type: ff_AlignType.TopRight, referView: nameLabel, size: nil, offset: offset)
-        timeLabel.ff_AlignHorizontal(type: ff_AlignType.BottomRight, referView: iconView, size: nil, offset: offset)
-        sourceLabel.ff_AlignHorizontal(type: ff_AlignType.TopRight, referView: timeLabel, size: nil, offset: offset)
-        vipImageView.ff_AlignInner(type: ff_AlignType.BottomRight, referView: iconView, size: CGSize(width: 14, height: 14), offset: CGPoint(x: 3, y: 3))
+        iconView.ff_AlignInner(type: ff_AlignType.topLeft, referView: self, size: CGSize(width: kStatusIconWidth, height: kStatusIconWidth), offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
+        nameLabel.ff_AlignHorizontal(type: ff_AlignType.topRight, referView: iconView, size: nil, offset: offset)
+        memberImageView.ff_AlignHorizontal(type: ff_AlignType.topRight, referView: nameLabel, size: nil, offset: offset)
+        timeLabel.ff_AlignHorizontal(type: ff_AlignType.bottomRight, referView: iconView, size: nil, offset: offset)
+        sourceLabel.ff_AlignHorizontal(type: ff_AlignType.topRight, referView: timeLabel, size: nil, offset: offset)
+        vipImageView.ff_AlignInner(type: ff_AlignType.bottomRight, referView: iconView, size: CGSize(width: 14, height: 14), offset: CGPoint(x: 3, y: 3))
 
     }
     
     //  MARK: - 懒加载控件
-    private lazy var iconView: UIImageView = {
+    fileprivate lazy var iconView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "avatar_default_big"))
         imageView.layer.cornerRadius = kStatusIconWidth / 2.0
         imageView.layer.masksToBounds = true
         return imageView
     }()
-    private lazy var nameLabel: UILabel = UILabel(title: nil, color: UIColor.darkGrayColor(), fontSize: 14)
-    private lazy var memberImageView: UIImageView = UIImageView(image: UIImage(named: "common_icon_membership"))
-    private lazy var timeLabel: UILabel = UILabel(title: "", color: UIColor ( red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0 ), fontSize: 11)
-    private lazy var sourceLabel: UILabel = UILabel(title: "", color: UIColor ( red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0 ), fontSize: 11)
-    private lazy var vipImageView: UIImageView = {
+    fileprivate lazy var nameLabel: UILabel = UILabel(title: nil, color: UIColor.darkGray, fontSize: 14)
+    fileprivate lazy var memberImageView: UIImageView = UIImageView(image: UIImage(named: "common_icon_membership"))
+    fileprivate lazy var timeLabel: UILabel = UILabel(title: "", color: UIColor ( red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0 ), fontSize: 11)
+    fileprivate lazy var sourceLabel: UILabel = UILabel(title: "", color: UIColor ( red: 0.6, green: 0.6, blue: 0.6, alpha: 1.0 ), fontSize: 11)
+    fileprivate lazy var vipImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "avatar_grassroot"))
         imageView.layer.borderWidth = 1
-        imageView.layer.borderColor = UIColor.whiteColor().CGColor
+        imageView.layer.borderColor = UIColor.white.cgColor
         imageView.layer.cornerRadius = 7
         imageView.layer.masksToBounds = true
         

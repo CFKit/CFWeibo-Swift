@@ -25,14 +25,14 @@ class CFRefreshControl: UIRefreshControl {
     //  翻转标记
     //  private var rotateFlag = false
     //  监听对象的 key value 一旦变化，就会调用此方法
-    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         /*
             越向下 y 越小，小到一定程度自动进入刷新状态
          */
         
         if frame.origin.y > 0 { return }
         //  判断是否正在上刷新
-        if  refreshing {
+        if  isRefreshing {
 //            refreshView.startLoadingAnimation()
             return
         }
@@ -60,27 +60,27 @@ class CFRefreshControl: UIRefreshControl {
         self.removeObserver(self, forKeyPath: "frame")
     }
     
-    private func setupUI() {
+    fileprivate func setupUI() {
         //  KVO  self 监听 self.frame
         self.addObserver(self, forKeyPath: "frame", options: [], context: nil)
         
         
-        tintColor = UIColor.clearColor()
+        tintColor = UIColor.clear
         addSubview(refreshView)
         
         //  自动布局，从 xib 加载的视图会保留 xib 中指定的大小
-        refreshView.ff_AlignInner(type: ff_AlignType.CenterCenter, referView: self, size: refreshView.bounds.size)
+        refreshView.ff_AlignInner(type: ff_AlignType.centerCenter, referView: self, size: refreshView.bounds.size)
         
     }
     
-    func addRefreshing(target: AnyObject, selector: Selector) {
+    func addRefreshing(_ target: AnyObject, selector: Selector) {
         self.refreshingTarget = target
         self.refreshingSelector = selector
     }
     
     
     //  MARK: - 懒加载控件
-    private lazy var refreshView = CFRefreshView.refreshView()
+    fileprivate lazy var refreshView = CFRefreshView.refreshView()
     
     var refreshingSelector: Selector?
     var refreshingTarget: AnyObject?
@@ -90,7 +90,7 @@ class CFRefreshControl: UIRefreshControl {
 /// 刷新视图，负责显示内容和动画
 class CFRefreshView: UIView {
     /// 旋转标记
-    private var rotateFlag = false {
+    fileprivate var rotateFlag = false {
         didSet {
             rotatePulldownIconAnimation()
         }
@@ -104,37 +104,37 @@ class CFRefreshView: UIView {
     @IBOutlet weak var pulldownIcon: UIImageView!
     //  从 xib 加载 refreshView
     class func refreshView() -> CFRefreshView {
-        return NSBundle.mainBundle().loadNibNamed("CFRefreshView", owner: nil, options: nil).last! as! CFRefreshView
+        return Bundle.main.loadNibNamed("CFRefreshView", owner: nil, options: nil)!.last! as! CFRefreshView
     }
     
-    private func rotatePulldownIconAnimation() {
+    fileprivate func rotatePulldownIconAnimation() {
        
         var angle = CGFloat(M_PI)
         angle += rotateFlag ? -0.001 : 0.001
         
         //  在 iOS 的闭包动画中，默认是顺时针旋转，就近原则
-        UIView.animateWithDuration(0.5) {
-            self.pulldownIcon.transform = CGAffineTransformRotate(self.pulldownIcon.transform, angle)
-        }
+        UIView.animate(withDuration: 0.5, animations: {
+            self.pulldownIcon.transform = self.pulldownIcon.transform.rotated(by: angle)
+        }) 
     }
     
-    private func startLoadingAnimation() {
+    fileprivate func startLoadingAnimation() {
         //  通过 key 能够拿到涂层上的动画
         let loadingKey = "loadingKey"
-        if loadingIcon.layer.animationForKey(loadingKey) != nil {
+        if loadingIcon.layer.animation(forKey: loadingKey) != nil {
             return
         }
         
-        pulldownView.hidden = true
+        pulldownView.isHidden = true
         let anim = CABasicAnimation(keyPath: "transform.rotation")
         anim.toValue = 2 * M_PI
         anim.repeatCount = MAXFLOAT
         anim.duration = 1
-        loadingIcon.layer.addAnimation(anim, forKey: loadingKey)
+        loadingIcon.layer.add(anim, forKey: loadingKey)
     }
     
-    private func stopLoadingAnimation() {
-        pulldownView.hidden = false
+    fileprivate func stopLoadingAnimation() {
+        pulldownView.isHidden = false
         loadingIcon.layer.removeAllAnimations()
     }
 }

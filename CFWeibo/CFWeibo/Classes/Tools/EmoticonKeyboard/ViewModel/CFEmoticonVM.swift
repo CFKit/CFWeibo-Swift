@@ -19,7 +19,7 @@ class CFEmoticonVM {
     static let sharedEmoticonVM = CFEmoticonVM()
     
     //  能保证外界只能通过单例属性访问对象，不能直接实例化
-    private init() {
+    fileprivate init() {
         //  加载表情包
         loadPackages()
     }
@@ -28,13 +28,13 @@ class CFEmoticonVM {
     lazy var packages = [CFEmoticonPackageM]()
     
     /// 根据给定的字符串，生成带表情符号的属性字符串
-    func emoticonText(str: String, font: UIFont) -> NSAttributedString {
+    func emoticonText(_ str: String, font: UIFont) -> NSAttributedString {
         //  2. 使用正则表达式，拆解字符串 [] 在正则表达式中是保留字，如果 pattern 中要使用，需要转移
         let pattern = "\\[.*?\\]"
         let regex = try! NSRegularExpression(pattern: pattern, options: [])
         
         //  matchesInString 查找所有的匹配项
-        let results = regex.matchesInString(str, options: [], range: NSRange(location: 0, length: (str as NSString).length))
+        let results = regex.matches(in: str, options: [], range: NSRange(location: 0, length: (str as NSString).length))
         
         //  准备属性字符串
         let strM = NSMutableAttributedString(string: str)
@@ -44,15 +44,15 @@ class CFEmoticonVM {
         //  根据数量 ‘倒序’ 遍历数组内容
         while count > 0 {
             count = count - 1
-            let range = results[count].rangeAtIndex(0)
+            let range = results[count].rangeAt(0)
             
             //  根据 range 获取到对应的 chs 字符串
-            let chs = (str as NSString).substringWithRange(range)
+            let chs = (str as NSString).substring(with: range)
             
             if let emoticon = emoticon(chs) {
                 let imageText = CFEmoticonAttachment.emoticonAttributeText(emoticon, font: font)
                 //  替换 strM 中对应的属性文本
-                strM.replaceCharactersInRange(range, withAttributedString: imageText)
+                strM.replaceCharacters(in: range, with: imageText)
                 
             }
             
@@ -64,7 +64,7 @@ class CFEmoticonVM {
         return strM
     }
     
-    func emoticon(str: String) -> CFEmoticonM? {
+    func emoticon(_ str: String) -> CFEmoticonM? {
         
         //  通过视图模型的单例 -> packages 所有表情包数组 -> emoticons 'chs == str'
         //  遍历 packages 数组
@@ -86,7 +86,7 @@ class CFEmoticonVM {
     /// 添加最近的表情
     ///
     /// - parameter indexPath: indexPath
-    func favorite(emoticon: CFEmoticonM) {
+    func favorite(_ emoticon: CFEmoticonM) {
 
         //  1. 获取表情符号
 
@@ -97,16 +97,16 @@ class CFEmoticonVM {
         //  2. 将表情符号添加到第 0 组 第一个。
         //  判断是否已经存在表情
         if !packages[0].emoticons.contains(emoticon) {
-            packages[0].emoticons.insert(emoticon, atIndex: 0)
+            packages[0].emoticons.insert(emoticon, at: 0)
         } else {
-            let index = packages[0].emoticons.indexOf(emoticon)
-            packages[0].emoticons.removeAtIndex(index!)
-            packages[0].emoticons.insert(emoticon, atIndex: 0)
+            let index = packages[0].emoticons.index(of: emoticon)
+            packages[0].emoticons.remove(at: index!)
+            packages[0].emoticons.insert(emoticon, at: 0)
         }
         
         //  删除多余表情。 倒数第二个
         if packages[0].emoticons.count > 21 {
-            packages[0].emoticons.removeAtIndex(20)
+            packages[0].emoticons.remove(at: 20)
         }
         
 //        printLog(packages[0].emoticons as NSArray)
@@ -115,25 +115,25 @@ class CFEmoticonVM {
     }
     
     /// 根据 indexPath 返回对应的表情模型
-    func emoticon(indexPath: NSIndexPath) -> CFEmoticonM {
+    func emoticon(_ indexPath: IndexPath) -> CFEmoticonM {
         
-        let page = indexPath.row / (maxRow * maxLine)
-        let pageCount = indexPath.row % (maxRow * maxLine)
+        let page = (indexPath as NSIndexPath).row / (maxRow * maxLine)
+        let pageCount = (indexPath as NSIndexPath).row % (maxRow * maxLine)
         
         let index = pageCount % maxRow * maxLine + pageCount / maxRow + page * maxLine * maxRow
         
-        return packages[indexPath.section].emoticons[index]
+        return packages[(indexPath as NSIndexPath).section].emoticons[index]
     }
     
     //  MARK: - 私有函数
     /// 加载表情包
-    private func loadPackages() {
+    fileprivate func loadPackages() {
         
         //  增加最近分组
-        packages.append(CFEmoticonPackageM(dict: ["group_name_cn": "最近"]))
+        packages.append(CFEmoticonPackageM(dict: ["group_name_cn": "最近" as AnyObject]))
         
         //  1. 读取 emoticons.plist 
-        let path = NSBundle.mainBundle().pathForResource("emoticons.plist", ofType: nil, inDirectory: "Emoticons.bundle")
+        let path = Bundle.main.path(forResource: "emoticons.plist", ofType: nil, inDirectory: "Emoticons.bundle")
         //  2. 读取字典
         let rootDict = NSDictionary(contentsOfFile: path!)
         //  3. 获取 package 数组
@@ -143,7 +143,7 @@ class CFEmoticonVM {
             //  1> 获取 字典中的 id
             let id = dict["id"] as! String
             //  2> 拼接表情包路劲
-            let emPath = NSBundle.mainBundle().pathForResource("info.plist", ofType: nil, inDirectory: "Emoticons.bundle/" + id)
+            let emPath = Bundle.main.path(forResource: "info.plist", ofType: nil, inDirectory: "Emoticons.bundle/" + id)
             //  3> 加载 info.plist 字典
             let infoDict = NSDictionary(contentsOfFile: emPath!) as! [String: AnyObject]
             //  4> 字典转模型

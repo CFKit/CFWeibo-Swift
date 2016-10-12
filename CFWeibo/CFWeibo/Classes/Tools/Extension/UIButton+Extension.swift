@@ -20,12 +20,13 @@ extension UIButton {
     convenience init(title: String, imageName: String, color: UIColor, fontSize: CGFloat) {
         self.init()
         
-        setTitle(title, forState: UIControlState.Normal)
-        setImage(UIImage(named : imageName), forState: UIControlState.Normal)
-        setTitleColor(color, forState: UIControlState.Normal)
-        titleLabel?.font = UIFont.systemFontOfSize(fontSize)
+        setTitle(title, for: UIControlState())
+        setImage(UIImage(named : imageName), for: UIControlState())
+        setTitleColor(color, for: UIControlState())
+        titleLabel?.font = UIFont.systemFont(ofSize: fontSize)
         
     }
+    
     
     /// 遍历构造函数
     ///
@@ -35,12 +36,25 @@ extension UIButton {
     /// - parameter backColor: 背景色
     ///
     /// - returns: button
-    convenience init(title: String, fontSize: CGFloat, color: UIColor = UIColor.whiteColor(), backColor: UIColor = UIColor.darkGrayColor()) {
+    convenience init(title: String, fontSize: CGFloat) {
         self.init()
         
-        setTitle(title, forState: UIControlState.Normal)
-        setTitleColor(color, forState: UIControlState.Normal)
-        titleLabel?.font = UIFont.systemFontOfSize(fontSize)
+        setTitle(title, for: UIControlState())
+        titleLabel?.font = UIFont.systemFont(ofSize: fontSize)
+    }
+
+    /// 遍历构造函数
+    ///
+    /// - parameter title:     标题
+    /// - parameter fontSize:  字体
+    /// - parameter color:     颜色
+    /// - parameter backColor: 背景色
+    ///
+    /// - returns: button
+    convenience init(title: String, fontSize: CGFloat, color: UIColor = UIColor.white, backColor: UIColor = UIColor.darkGray) {
+        self.init(title: title, fontSize: fontSize)
+        
+        setTitleColor(color, for: UIControlState())
         backgroundColor = backColor
     }
 
@@ -48,8 +62,8 @@ extension UIButton {
     convenience init(imageName: String) {
         self.init()
         
-        setImage(UIImage(named: imageName), forState: UIControlState.Normal)
-        setImage(UIImage(named: imageName + "_highlighted"), forState: UIControlState.Highlighted)
+        setImage(UIImage(named: imageName), for: UIControlState())
+        setImage(UIImage(named: imageName + "_highlighted"), for: UIControlState.highlighted)
         sizeToFit()
     }
 

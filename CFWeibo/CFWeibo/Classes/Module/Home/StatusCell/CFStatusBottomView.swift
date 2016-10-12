@@ -20,7 +20,7 @@ class CFStatusBottomView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI() {
+    fileprivate func setupUI() {
         //  设置背景颜色
         backgroundColor = UIColor(white: 0.97, alpha: 1)
         
@@ -39,16 +39,16 @@ class CFStatusBottomView: UIView {
         addSubview(bottomLine)
         addSubview(bottomLine2)
         
-        ff_HorizontalTile([forwarButton, commonButton, likeButton], insets: UIEdgeInsetsZero)
-        topLine.ff_AlignInner(type: ff_AlignType.TopLeft, referView: self, size: CGSize(width: kScreenWidth, height: 1))
-        bottomLine.ff_AlignInner(type: ff_AlignType.TopLeft, referView: bottomLine, size: CGSize(width: kScreenWidth, height: 0.5))
-        bottomLine2.ff_AlignInner(type: ff_AlignType.BottomLeft, referView: self, size: CGSize(width: kScreenWidth, height: 0.5))
+        ff_HorizontalTile([forwarButton, commonButton, likeButton], insets: UIEdgeInsets.zero)
+        topLine.ff_AlignInner(type: ff_AlignType.topLeft, referView: self, size: CGSize(width: kScreenWidth, height: 1))
+        bottomLine.ff_AlignInner(type: ff_AlignType.topLeft, referView: bottomLine, size: CGSize(width: kScreenWidth, height: 0.5))
+        bottomLine2.ff_AlignInner(type: ff_AlignType.bottomLeft, referView: self, size: CGSize(width: kScreenWidth, height: 0.5))
     }
     
-    private lazy var forwarButton = UIButton(title: " 转发", imageName: "timeline_icon_retweet", color: UIColor.darkGrayColor(), fontSize: 12)
+    fileprivate lazy var forwarButton = UIButton(title: " 转发", imageName: "timeline_icon_retweet", color: UIColor.darkGray, fontSize: 12)
     
-    private lazy var commonButton = UIButton(title: " 评论", imageName: "timeline_icon_comment", color: UIColor.darkGrayColor(), fontSize: 12)
+    fileprivate lazy var commonButton = UIButton(title: " 评论", imageName: "timeline_icon_comment", color: UIColor.darkGray, fontSize: 12)
     
-    private lazy var likeButton = UIButton(title: " 赞", imageName: "timeline_icon_unlike", color: UIColor.darkGrayColor(), fontSize: 12)
+    fileprivate lazy var likeButton = UIButton(title: " 赞", imageName: "timeline_icon_unlike", color: UIColor.darkGray, fontSize: 12)
 }
 

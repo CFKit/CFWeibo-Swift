@@ -15,8 +15,8 @@ extension UIView {
     /// - parameter view: view
     ///
     /// - returns: rect
-    class func convertRectInWindow(superView: UIView, view: UIView) -> CGRect {
-        let rect = superView.convertRect(view.frame, toCoordinateSpace: UIApplication.sharedApplication().keyWindow!)
+    class func convertRectInWindow(_ superView: UIView, view: UIView) -> CGRect {
+        let rect = superView.convert(view.frame, to: UIApplication.shared.keyWindow!)
         return rect
     }
     

@@ -31,7 +31,7 @@ class CFQRCodeVC: UIViewController {
         
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         barAnimation()
         //  开始扫描
@@ -49,7 +49,7 @@ class CFQRCodeVC: UIViewController {
     //  2. 输入设备 - 摄像头
     lazy var videoInput: AVCaptureDeviceInput = {
         //  拿到摄像头设备
-        let device = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo)
+        let device = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
         let input = try! AVCaptureDeviceInput(device: device)
         
         return input
@@ -64,9 +64,9 @@ class CFQRCodeVC: UIViewController {
     lazy var previewLayer: AVCaptureVideoPreviewLayer = {
         //  必须制定一个session
         let layer = AVCaptureVideoPreviewLayer(session: self.session)
-        layer.frame = self.view.bounds
+        layer?.frame = self.view.bounds
         
-        return layer
+        return layer!
     } ()
     
     //  5. 绘图图层
@@ -82,20 +82,20 @@ class CFQRCodeVC: UIViewController {
 extension CFQRCodeVC {
     
     //  开始扫描
-    private func scan() {
+    fileprivate func scan() {
         //  1. 判断会话能否添加输入设备
         if !session.canAddInput(videoInput) {
-            SVProgressHUD.showInfoWithStatus("无法添加输入设备")
+            SVProgressHUD.showInfo(withStatus: "无法添加输入设备")
             return
         }
         //  2. 判断会话能否添加输出设备
         if !session.canAddOutput(dataOutput) {
-            SVProgressHUD.showInfoWithStatus("无法添加输出设备")
+            SVProgressHUD.showInfo(withStatus: "无法添加输出设备")
             return
         }
         //  6. 添加预览图层
-        view.layer.insertSublayer(drawLayer, atIndex: 0)
-        view.layer.insertSublayer(previewLayer, atIndex: 0)
+        view.layer.insertSublayer(drawLayer, at: 0)
+        view.layer.insertSublayer(previewLayer, at: 0)
         
         //  3. 需要将设备添加到会话中，才能或得 - 输出数据支持的格式
         session.addInput(videoInput)
@@ -103,7 +103,7 @@ extension CFQRCodeVC {
         
         //  4. 设置输出识别的格式 & 代理
         dataOutput.metadataObjectTypes = dataOutput.availableMetadataObjectTypes
-        dataOutput.setMetadataObjectsDelegate(self, queue: dispatch_get_main_queue())
+        dataOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
         
         //  5. 启动会话
         session.startRunning()
@@ -111,12 +111,12 @@ extension CFQRCodeVC {
     
     
     //  关闭界面
-    @IBAction func close(sender: AnyObject) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func close(_ sender: AnyObject) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     //  查看相册
-    @IBAction func lookPhotoAlbum(sender: AnyObject) {
+    @IBAction func lookPhotoAlbum(_ sender: AnyObject) {
         
     }
     
@@ -125,27 +125,27 @@ extension CFQRCodeVC {
 //  MARK: - 代理方法
 extension CFQRCodeVC: UITabBarDelegate, AVCaptureMetadataOutputObjectsDelegate {
     //  MARK: -- AVCaptureMetadataOutputObjectsDelegate
-    func captureOutput(captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [AnyObject]!, fromConnection connection: AVCaptureConnection!) {
+    func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
         
         clearDrawLayer()
         for codeObject in metadataObjects {
             if let obj = codeObject as? AVMetadataMachineReadableCodeObject {
 
-                let object = previewLayer.transformedMetadataObjectForMetadataObject(obj) as! AVMetadataMachineReadableCodeObject
+                let object = previewLayer.transformedMetadataObject(for: obj) as! AVMetadataMachineReadableCodeObject
                 drawCorners(object)
                 
-                SVProgressHUD.showInfoWithStatus(object.stringValue)
+                SVProgressHUD.showInfo(withStatus: object.stringValue)
             }
         }
         
     }
     
     //  MARK: -- UITabBarDelegate
-    func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem) {
+    func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
         
-        UIView.animateWithDuration(1) {
+        UIView.animate(withDuration: 1, animations: {
             self.heightConstraint.constant = (item.tag == 1 ? 0.5 : 1) * self.widthConstraint.constant
-        }
+        }) 
         
         //  核心动画中，是将动画添加到图层 - 停止一下动画
         self.scanImageView.layer.removeAllAnimations()
@@ -161,7 +161,7 @@ extension CFQRCodeVC: UITabBarDelegate, AVCaptureMetadataOutputObjectsDelegate {
 extension CFQRCodeVC {
     
     /// 清除绘图图层子视图
-    private func clearDrawLayer() {
+    fileprivate func clearDrawLayer() {
         if drawLayer.sublayers == nil {
             return
         }
@@ -171,57 +171,60 @@ extension CFQRCodeVC {
     }
     
     /// 绘制边线
-    private func drawCorners(codeObject: AVMetadataMachineReadableCodeObject) {
+    fileprivate func drawCorners(_ codeObject: AVMetadataMachineReadableCodeObject) {
         //  创建 'shape' layer 专门用来画图的
         let layer = CAShapeLayer()
-        layer.strokeColor = UIColor.orangeColor().CGColor
+        layer.strokeColor = UIColor.orange.cgColor
         layer.lineWidth = 1.0
-        layer.fillColor = UIColor.clearColor().CGColor
+        layer.fillColor = UIColor.clear.cgColor
         
         //  设置路径
         //  corners 中保存的是 CFDictionary objects 数组
-        layer.path = createPath(codeObject.corners).CGPath
+        layer.path = createPath(codeObject.corners as NSArray).cgPath
          
         drawLayer.addSublayer(layer)
         
     }
     
-    private func createPath(points: NSArray) -> UIBezierPath {
+    fileprivate func createPath(_ points: NSArray) -> UIBezierPath {
         let path = UIBezierPath()
         var point = CGPoint()
         
         var index = 0
+        //  TODO: - 修改 2 [不确定]
         //  1. 移动到第一个点
-        CGPointMakeWithDictionaryRepresentation((points[index] as! CFDictionaryRef), &point)
+        point = CGPoint(dictionaryRepresentation: (points[index] as! CFDictionary))!
+//        CGPointMakeWithDictionaryRepresentation((points[index] as! CFDictionary), &point)
         index += 1
-        path.moveToPoint(point)
+        path.move(to: point)
         
         //  2. 循环遍历剩下的点
         while index < points.count {
-            CGPointMakeWithDictionaryRepresentation((points[index] as! CFDictionaryRef), &point)
-            path.addLineToPoint(point)
+            point = CGPoint(dictionaryRepresentation: points[index] as! CFDictionary)!
+//            CGPointMakeWithDictionaryRepresentation((points[index] as! CFDictionary), &point)
+            path.addLine(to: point)
             index += 1
         }
         //  3. 从起始点到结束点画一条线
-        path.closePath()
+        path.close()
         
         return path
     }
     
     
     //  冲击波动画
-    private func barAnimation() {
+    fileprivate func barAnimation() {
     
         topConstraint.constant = -heightConstraint.constant
         //  强制更新布局
         view.layoutIfNeeded()
         
-        UIView.animateWithDuration(2.0) {
+        UIView.animate(withDuration: 2.0, animations: {
             //  设置动画重复次数
             UIView.setAnimationRepeatCount(MAXFLOAT)
             self.topConstraint.constant = self.heightConstraint.constant
             self.view.layoutIfNeeded()
-        }
+        }) 
         
     }
 }

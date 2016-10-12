@@ -13,10 +13,11 @@ extension UIColor {
     ///
     /// - returns: UIColor
     class func randomColor() -> UIColor {
-     
-        let r = CGFloat(random() % 256) / 255
-        let g = CGFloat(random() % 256) / 255
-        let b = CGFloat(random() % 256) / 255
+        //  Swift 3.0 新增随机颜色
+
+        let r = CGFloat(arc4random() % 256) / 255
+        let g = CGFloat(arc4random() % 256) / 255
+        let b = CGFloat(arc4random() % 256) / 255
         return UIColor(red: r, green: g, blue: b, alpha: 1.0)
     }
 

@@ -21,7 +21,7 @@ extension UIBarButtonItem {
         let button = UIButton(imageName: imageName)
         // 添加监听
         if target != nil && actionName != nil {
-            button.addTarget(target, action: Selector(actionName!), forControlEvents: UIControlEvents.TouchUpInside)
+            button.addTarget(target, action: Selector(actionName!), for: UIControlEvents.touchUpInside)
         }
         
         self.init(customView: button)
@@ -39,7 +39,7 @@ extension UIBarButtonItem {
         let button = UIButton(imageName: imageName)
         // 添加监听
         if target != nil && selector != nil {
-            button.addTarget(target, action: selector!, forControlEvents: UIControlEvents.TouchUpInside)
+            button.addTarget(target, action: selector!, for: UIControlEvents.touchUpInside)
         }
         
         self.init(customView: button)

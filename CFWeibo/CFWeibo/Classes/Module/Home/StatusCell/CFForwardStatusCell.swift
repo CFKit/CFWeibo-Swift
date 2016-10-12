@@ -33,36 +33,36 @@ class CFForwardStatusCell: CFStatusCell {
         contentView.insertSubview(forwardLabel, aboveSubview:backButton)
         
         //  1. 北京按钮
-        backButton.ff_AlignVertical(type: ff_AlignType.BottomLeft, referView: contentLabel, size: nil, offset: CGPoint(x: -kStatusCellMargin, y: kStatusCellMargin))
-        backButton.ff_AlignVertical(type: ff_AlignType.TopRight, referView: bottomView, size: nil)
+        backButton.ff_AlignVertical(type: ff_AlignType.bottomLeft, referView: contentLabel, size: nil, offset: CGPoint(x: -kStatusCellMargin, y: kStatusCellMargin))
+        backButton.ff_AlignVertical(type: ff_AlignType.topRight, referView: bottomView, size: nil)
         //  2. 转发文字
-        forwardLabel.ff_AlignInner(type: ff_AlignType.TopLeft, referView: backButton, size: nil, offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
+        forwardLabel.ff_AlignInner(type: ff_AlignType.topLeft, referView: backButton, size: nil, offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
         //  3. 图片视图
         let cons = pictureView.ff_AlignVertical(
-            type: ff_AlignType.BottomLeft,
+            type: ff_AlignType.bottomLeft,
             referView: forwardLabel,
             size: CGSize(width: kStatusPictureMaxWidth, height: kStatusPictureMaxWidth),
             offset: CGPoint(x: 0, y: kStatusCellMargin))
         //  记录约束
-        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Width)
-        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Height)
-        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Top)
+        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.width)
+        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.height)
+        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.top)
     }
 
     
     //  MARK: - 懒加载控件
     /// 背景按钮
-    private lazy var backButton: UIButton = {
+    fileprivate lazy var backButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
         
         return button
     } ()
     /// 转发文字
-    private lazy var forwardLabel: FFLabel = {
+    fileprivate lazy var forwardLabel: FFLabel = {
         let label = FFLabel()
-        label.textColor = UIColor.darkGrayColor()
-        label.font = UIFont.systemFontOfSize(16)
+        label.textColor = UIColor.darkGray
+        label.font = UIFont.systemFont(ofSize: 16)
         label.preferredMaxLayoutWidth = kScreenWidth - 2 * kStatusCellMargin
         label.numberOfLines = 0
         label.labelDelegate = self;

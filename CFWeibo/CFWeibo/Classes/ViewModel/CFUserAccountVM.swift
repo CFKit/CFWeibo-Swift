@@ -31,14 +31,14 @@ class CFUserAccountVM: NSObject {
         return accessToken != nil
     }
     
-    var avatarURL: NSURL? {
-        return NSURL(string: userAccount?.avatar_large ?? "")
+    var avatarURL: URL? {
+        return URL(string: userAccount?.avatar_large ?? "")
     }
 
     
     // MARK: - 加载网络数据
     
-    func loadUserAccount(code: String) -> RACSignal {
+    func loadUserAccount(_ code: String) -> RACSignal {
         
         return RACSignal.createSignal({ (subscriber) -> RACDisposable! in
             
@@ -65,14 +65,14 @@ class CFUserAccountVM: NSObject {
                     account.saveUserAccount()
 
                     //  直接通知订阅者网络数据加载完成
-                    subscriber.sendCompleted()
+                    subscriber?.sendCompleted()
 
                     }, error: { (error) -> Void in
-                        subscriber.sendError(error)
+                        subscriber?.sendError(error)
                 })
 
             }).subscribeError({ (error) -> Void in
-                subscriber.sendError(error)
+                subscriber?.sendError(error)
             })
             
             return nil

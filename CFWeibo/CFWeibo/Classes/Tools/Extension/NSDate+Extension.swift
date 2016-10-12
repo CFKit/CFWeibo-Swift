@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension NSDate {
+extension Date {
     //  返回日期的描述字符串
     /*
      - 刚刚(1分钟内)
@@ -20,12 +20,12 @@ extension NSDate {
      */
     var dateDescription: String {
         //  1. 日历类 -提供了非常丰富的日期转换函数
-        let calendar = NSCalendar.currentCalendar()
+        let calendar = Calendar.current
         
         var fmtString = ""
         if calendar.isDateInToday(self) {
             //  今天
-            let delta = Int(NSDate().timeIntervalSinceDate(self))
+            let delta = Int(Date().timeIntervalSince(self))
             
             if delta < 60 {
                 fmtString = "刚刚"
@@ -41,18 +41,18 @@ extension NSDate {
             fmtString = "MM-dd"
             
             //  计算两个日期之间的差值，如果是年度差会计算一个完整年
-            let componentsYear = calendar.components(.Year, fromDate: self, toDate: NSDate(), options: [])
+            let componentsYear = (calendar as NSCalendar).components(.year, from: self, to: Date(), options: [])
 
-            if componentsYear.year > 0 {
+            if componentsYear.year! > 0 {
                 fmtString = "yyyy-" + fmtString
             }
         }
         
-        let df = NSDateFormatter()
-        df.locale = NSLocale(localeIdentifier: "en")
+        let df = DateFormatter()
+        df.locale = Locale(identifier: "en")
         df.dateFormat = fmtString
         
-        return df.stringFromDate(self)
+        return df.string(from: self)
 
         //  提取日期中指定‘单位 year/month/day...’的数字
 //        print(calendar.component(.Year, fromDate: self))
@@ -64,13 +64,13 @@ extension NSDate {
     /// - parameter str: str
     ///
     /// - returns: date
-    class func sinaDate(str: String) -> NSDate?{
+    static func sinaDate(_ str: String) -> Date?{
         //  1. 转换日期
-        let df = NSDateFormatter()
+        let df = DateFormatter()
         //  以前版本的模拟器不需要指定，但是真机一定要，否则会出错
-        df.locale = NSLocale(localeIdentifier: "en")
+        df.locale = Locale(identifier: "en")
         df.dateFormat = "EEE MMM dd HH:mm:ss zzz yyyy"
         //  生成日期
-        return df.dateFromString(str)
+        return df.date(from: str)
     }
 }

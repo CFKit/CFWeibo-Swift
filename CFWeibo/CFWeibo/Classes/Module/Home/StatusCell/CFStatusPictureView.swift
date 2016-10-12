@@ -33,7 +33,7 @@ class CFStatusPictureView: UICollectionView {
         for index in 0..<urls.count {
             let url = urls[index]
             
-            if let image = SDWebImageManager.sharedManager().imageCache.imageFromDiskCacheForKey(url.absoluteString) {
+            if let image = SDWebImageManager.shared().imageCache.imageFromDiskCache(forKey: url.absoluteString) {
                 imgs.append(image)
             } else {
                 imgs.append(UIImage())
@@ -42,27 +42,27 @@ class CFStatusPictureView: UICollectionView {
         return imgs
     }
     
-    var imageContentMode: UIViewContentMode = UIViewContentMode.ScaleAspectFill
+    var imageContentMode: UIViewContentMode = UIViewContentMode.scaleAspectFill
     
-    override func sizeThatFits(size: CGSize) -> CGSize {
+    override func sizeThatFits(_ size: CGSize) -> CGSize {
         return calcViewSize()
     }
     /// 根据模型中图片数量返回视图大小
-    private func calcViewSize() -> CGSize {
+    fileprivate func calcViewSize() -> CGSize {
         let layout = collectionViewLayout as! CFStatusPictureViewFlowLayout
         layout.itemSize = CGSize(width: kStatusPictureItemWidth, height: kStatusPictureItemWidth)
         let count = statusVM?.bmiddleURLs?.count ?? 0
         
-        imageContentMode = UIViewContentMode.ScaleAspectFill
+        imageContentMode = UIViewContentMode.scaleAspectFill
         
         if count == 0 {
-            return CGSizeZero
+            return CGSize.zero
         } else if count == 1 {
             
             var size = CGSize(width: kStatusPictureItemWidth, height: kStatusPictureItemWidth)
             //  判断图片是否已经被正确缓存 key 是 URL 的完成字符串
             let key = statusVM?.bmiddleURLs![0].absoluteString
-            if let image = SDWebImageManager.sharedManager().imageCache.imageFromDiskCacheForKey(key) {
+            if let image = SDWebImageManager.shared().imageCache.imageFromDiskCache(forKey: key) {
                 size = image.size
             }
             
@@ -71,7 +71,7 @@ class CFStatusPictureView: UICollectionView {
             if size.width > maxwidth || size.height > kScreenHeight / 2 {
                 size.width = maxwidth / 2
                 size.height = kScreenHeight / 3
-                imageContentMode = UIViewContentMode.Top
+                imageContentMode = UIViewContentMode.top
             }
             
             layout.itemSize = size
@@ -89,7 +89,7 @@ class CFStatusPictureView: UICollectionView {
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         //  默认 layout 没有被初始化
         super.init(frame: frame, collectionViewLayout: CFStatusPictureViewFlowLayout())
-        backgroundColor = UIColor.whiteColor()
+        backgroundColor = UIColor.white
         
         //  指定数据源(自己当自己的数据源) 代理
         /*
@@ -101,7 +101,7 @@ class CFStatusPictureView: UICollectionView {
         delegate = self;
         
         //  注册 cell 
-        registerClass(CFStatusPictureCell.self, forCellWithReuseIdentifier: kStatusPictureCellIdentifier)
+        register(CFStatusPictureCell.self, forCellWithReuseIdentifier: kStatusPictureCellIdentifier)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -112,20 +112,20 @@ class CFStatusPictureView: UICollectionView {
 
 //  MARK: - UICollectionViewDataSource
 extension CFStatusPictureView: UICollectionViewDataSource, UICollectionViewDelegate {
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return statusVM?.bmiddleURLs?.count ?? 0
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(kStatusPictureCellIdentifier, forIndexPath: indexPath) as! CFStatusPictureCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kStatusPictureCellIdentifier, for: indexPath) as! CFStatusPictureCell
         
-        cell.imageURL = statusVM!.bmiddleURLs![indexPath.row]
+        cell.imageURL = statusVM!.bmiddleURLs![(indexPath as NSIndexPath).row] as URL
         cell.imageContentMode = imageContentMode
         
         return cell
     }
 
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         /**
             发送通知
          object: 发送的对象，可以传递一个数值，也可以是自己
@@ -133,7 +133,7 @@ extension CFStatusPictureView: UICollectionViewDataSource, UICollectionViewDeleg
          */
         
         
-        NSNotificationCenter.defaultCenter().postNotificationName(kStatusPictureViewSelectedPhotoNotification, object: self, userInfo: [kStatusPictureViewSelectedPhotoIndexPathKey: indexPath, kStatusPictureViewSelectedPhotoURLsKey: statusVM!.originalURLs!])
+        NotificationCenter.default.post(name: Notification.Name(rawValue: kStatusPictureViewSelectedPhotoNotification), object: self, userInfo: [kStatusPictureViewSelectedPhotoIndexPathKey: indexPath, kStatusPictureViewSelectedPhotoURLsKey: statusVM!.originalURLs!])
         
 //        let rect = screenRect(indexPath)
 //        let fullRect = fullScreenRect(indexPath)
@@ -142,24 +142,24 @@ extension CFStatusPictureView: UICollectionViewDataSource, UICollectionViewDeleg
     
     }
     
-    func screenRect(indexPath: NSIndexPath) -> CGRect {
-        let rect = UIView.convertRectInWindow(self, view: self.cellForItemAtIndexPath(indexPath)!)
+    func screenRect(_ indexPath: IndexPath) -> CGRect {
+        let rect = UIView.convertRectInWindow(self, view: self.cellForItem(at: indexPath)!)
         return rect
     }
     
-    func fullScreenRect(indexPath: NSIndexPath) -> CGRect {
+    func fullScreenRect(_ indexPath: IndexPath) -> CGRect {
         //  根据 [缩略图] 图片计算目标尺寸
-        let key = statusVM?.bmiddleURLs![indexPath.item].absoluteString
-        guard let image = SDWebImageManager.sharedManager().imageCache.imageFromDiskCacheForKey(key) else {
-            return CGRectZero
+        let key = statusVM?.bmiddleURLs![(indexPath as NSIndexPath).item].absoluteString
+        guard let image = SDWebImageManager.shared().imageCache.imageFromDiskCache(forKey: key) else {
+            return CGRect.zero
         }
         
         let scale = image.size.height / image.size.width
-        let w = UIScreen.mainScreen().bounds.width
+        let w = UIScreen.main.bounds.width
         let h = scale * w
         
         //  判断高度
-        var y = (UIScreen.mainScreen().bounds.height - h) * 0.5
+        var y = (UIScreen.main.bounds.height - h) * 0.5
         if y < 0 {
             y = 0
         }
@@ -174,12 +174,12 @@ private let kStatusPictureCellIdentifier = "CFStatusPictureItem"
 //  MARK: - CFStatusPictureItem
 private class CFStatusPictureCell: UICollectionViewCell {
     //  配图视图的 URL
-    var imageURL: NSURL? {
+    var imageURL: URL? {
         didSet {
-            iconView.sd_setImageWithURL(imageURL)
+            iconView.sd_setImage(with: imageURL)
             
             let pathExtension = (imageURL!.absoluteString as NSString).pathExtension
-            gifIconView.hidden = pathExtension.lowercaseString != "gif"
+            gifIconView.isHidden = pathExtension.lowercased() != "gif"
         }
     }
     
@@ -191,11 +191,11 @@ private class CFStatusPictureCell: UICollectionViewCell {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor.whiteColor()
+        backgroundColor = UIColor.white
         addSubview(iconView)
         iconView.addSubview(gifIconView)
         iconView.ff_Fill(self)
-        gifIconView.ff_AlignInner(type: ff_AlignType.BottomRight, referView: iconView, size: nil)
+        gifIconView.ff_AlignInner(type: ff_AlignType.bottomRight, referView: iconView, size: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -204,13 +204,13 @@ private class CFStatusPictureCell: UICollectionViewCell {
     
     
     //  MARK: - 懒加载
-    private lazy var iconView: UIImageView = {
+    fileprivate lazy var iconView: UIImageView = {
         let imageView = UIImageView()
         imageView.clipsToBounds = true
         return imageView
     } ()
     /// gif 指示图片
-    private lazy var gifIconView = UIImageView(image: UIImage(named: "timeline_image_gif"))
+    fileprivate lazy var gifIconView = UIImageView(image: UIImage(named: "timeline_image_gif"))
     
     
 }

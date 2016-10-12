@@ -30,29 +30,29 @@ class CFBaseTableVC: UITableViewController {//VisitorLoginViewDelegate
         
     }
 
-    private func setUpVistorView() {
+    fileprivate func setUpVistorView() {
         visitorView = CFVisitorLoginView()
 //        visitorView?.delegate = self;
         //  替换根视图
         view = visitorView;
         
         //  设置导航按钮
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "注册", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(CFBaseTableVC.visitorLoginViewWillRegister))
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "登录", style: UIBarButtonItemStyle.Plain, target: self, action: #selector(CFBaseTableVC.visitorLoginViewWillLogin))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "注册", style: UIBarButtonItemStyle.plain, target: self, action: #selector(CFBaseTableVC.visitorLoginViewWillRegister))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "登录", style: UIBarButtonItemStyle.plain, target: self, action: #selector(CFBaseTableVC.visitorLoginViewWillLogin))
         
         //  设置按钮监听方法
-        visitorView?.registerButton.addTarget(self, action: #selector(CFBaseTableVC.visitorLoginViewWillRegister), forControlEvents: UIControlEvents.TouchUpInside)
-        visitorView?.loginButton.addTarget(self, action: #selector(CFBaseTableVC.visitorLoginViewWillLogin), forControlEvents: UIControlEvents.TouchUpInside)
+        visitorView?.registerButton.addTarget(self, action: #selector(CFBaseTableVC.visitorLoginViewWillRegister), for: UIControlEvents.touchUpInside)
+        visitorView?.loginButton.addTarget(self, action: #selector(CFBaseTableVC.visitorLoginViewWillLogin), for: UIControlEvents.touchUpInside)
     }
 
     
-    @objc private func visitorLoginViewWillLogin() {
+    @objc fileprivate func visitorLoginViewWillLogin() {
         let nav = UINavigationController(rootViewController: CFOAuthVC())
         
-        presentViewController(nav, animated: true, completion: nil)
+        present(nav, animated: true, completion: nil)
     }
     
-    @objc private func visitorLoginViewWillRegister() {
+    @objc fileprivate func visitorLoginViewWillRegister() {
         print("注册")
     }
 

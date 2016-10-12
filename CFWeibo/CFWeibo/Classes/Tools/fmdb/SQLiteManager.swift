@@ -15,22 +15,22 @@ class SQLiteManager {
     let queue: FMDatabaseQueue
    
     //  在 '构造函数' 建立数据库队列
-    private init() {
-        let path = (NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.UserDomainMask, true).last! as NSString).stringByAppendingPathComponent(dbname)
+    fileprivate init() {
+        let path = (NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true).last! as NSString).appendingPathComponent(dbname)
         print(path)
         queue = FMDatabaseQueue(path: path)
         createTable()
     }
     
-    private func createTable() {
+    fileprivate func createTable() {
         //executeStatements - 执行很多sql
         //executeQuery - 执行查询
         //executeUpdate - 执行单挑 SQL 插入/更新/删除 除了 SELECT 都可以
         
-        let path = NSBundle.mainBundle().pathForResource("weibo.sql", ofType: nil)!
+        let path = Bundle.main.path(forResource: "weibo.sql", ofType: nil)!
         let sql = try! String(contentsOfFile: path)
         queue.inTransaction { (db, rollback) in
-            if db.executeStatements(sql) {
+            if (db?.executeStatements(sql))! {
                 print("成功")
             } else {
                 print("失败")

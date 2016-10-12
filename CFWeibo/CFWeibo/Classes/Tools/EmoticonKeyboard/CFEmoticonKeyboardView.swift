@@ -18,11 +18,11 @@ let kMaxLine = 7
  3. 最近的表情没有记录，影响用户体验
  */
 class CFEmoticonKeyboardView: UIView {
-    var selectedEmoticonCallBack: (emoticon: CFEmoticonM)->()
+    var selectedEmoticonCallBack: (_ emoticon: CFEmoticonM)->()
     
-    init(selectedEmoticon: (emoticon: CFEmoticonM) -> ()) {
+    init(selectedEmoticon: @escaping (_ emoticon: CFEmoticonM) -> ()) {
         selectedEmoticonCallBack = selectedEmoticon
-        super.init(frame: CGRectMake(0, 0, UIScreen.mainScreen().bounds.size.width, 216))
+        super.init(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: 216))
         
         setupUI()
     }
@@ -33,60 +33,60 @@ class CFEmoticonKeyboardView: UIView {
 
     // MARK: - 懒加载控件
     /// 工具栏
-    private lazy var toolbar = UIToolbar()
+    fileprivate lazy var toolbar = UIToolbar()
     /// collectionView
-    private lazy var collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: CFEmoticonFlowLayout())
+    fileprivate lazy var collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: CFEmoticonFlowLayout())
     /// 表情包的视图模型
-    private lazy var emoticonVM = CFEmoticonVM.sharedEmoticonVM
+    fileprivate lazy var emoticonVM = CFEmoticonVM.sharedEmoticonVM
 
 }
 
 // MARK: - 页面布局
 extension CFEmoticonKeyboardView {
-    private func setupUI()  {
+    fileprivate func setupUI()  {
         addSubview(collectionView)
         addSubview(toolbar)
         
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         toolbar.translatesAutoresizingMaskIntoConstraints = false
-        let viewDict = ["cv": collectionView, "tb": toolbar]
+        let viewDict = ["cv": collectionView, "tb": toolbar] as [String : Any]
     
-        addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-0-[cv]-0-|", options: [], metrics: nil, views: viewDict))
-        addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-0-[tb]-0-|", options: [], metrics: nil, views: viewDict))
-        addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-0-[cv]-[tb(44)]-0-|", options: [], metrics: nil, views: viewDict))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[cv]-0-|", options: [], metrics: nil, views: viewDict))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-0-[tb]-0-|", options: [], metrics: nil, views: viewDict))
+        addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-0-[cv]-[tb(44)]-0-|", options: [], metrics: nil, views: viewDict))
         
         prepareToolbar()
         prepareCollectionView()
     }
     
-    private func prepareToolbar() {
-        toolbar.tintColor = UIColor.lightGrayColor()
+    fileprivate func prepareToolbar() {
+        toolbar.tintColor = UIColor.lightGray
         toolbar.barTintColor = UIColor ( red: 0.902, green: 0.902, blue: 0.902, alpha: 1.0 )
         
         var items = [UIBarButtonItem]()
         //  通过 tag 值区别 toolbar 上的按钮
         var index = 0
         for package in emoticonVM.packages {
-            let barButtonItem = UIBarButtonItem(title: package.group_name_cn, style: UIBarButtonItemStyle.Plain, target: self, action: #selector(CFEmoticonKeyboardView.clickItem(_:)))
+            let barButtonItem = UIBarButtonItem(title: package.group_name_cn, style: UIBarButtonItemStyle.plain, target: self, action: #selector(CFEmoticonKeyboardView.clickItem(_:)))
             barButtonItem.tag = index
             index += 1
             items.append(barButtonItem)
-            items.append(UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.FlexibleSpace, target: nil, action: nil))
+            items.append(UIBarButtonItem(barButtonSystemItem: UIBarButtonSystemItem.flexibleSpace, target: nil, action: nil))
         }
         items.removeLast()
         toolbar.items = items
         
     }
     
-    private func prepareCollectionView() {
+    fileprivate func prepareCollectionView() {
         //  1. 注册 cell
-        collectionView.registerClass(CFEmoticonCell.self, forCellWithReuseIdentifier: kEmoticonCellIdentifier)
+        collectionView.register(CFEmoticonCell.self, forCellWithReuseIdentifier: kEmoticonCellIdentifier)
         //  2. 指定数据源
         collectionView.dataSource = self
         collectionView.delegate = self
         
-        collectionView.backgroundColor = UIColor.whiteColor()
-        collectionView.pagingEnabled = true
+        collectionView.backgroundColor = UIColor.white
+        collectionView.isPagingEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
 
     }
@@ -95,10 +95,10 @@ extension CFEmoticonKeyboardView {
 
 // MARK: - 监听方法
 extension CFEmoticonKeyboardView {
-    @objc private func clickItem(item: UIBarButtonItem) {
+    @objc fileprivate func clickItem(_ item: UIBarButtonItem) {
         
-        let indexPath = NSIndexPath(forRow: 0, inSection: item.tag)
-        collectionView.scrollToItemAtIndexPath(indexPath, atScrollPosition: UICollectionViewScrollPosition.Left, animated: false)
+        let indexPath = IndexPath(row: 0, section: item.tag)
+        collectionView.scrollToItem(at: indexPath, at: UICollectionViewScrollPosition.left, animated: false)
         
     }
 }
@@ -106,16 +106,16 @@ extension CFEmoticonKeyboardView {
 // MARK: - 代理回调
 extension CFEmoticonKeyboardView: UICollectionViewDataSource, UICollectionViewDelegate {
     /// 分组数量
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return emoticonVM.packages.count
     }
     /// 每个分组的数量
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return emoticonVM.packages[section].emoticons.count
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(kEmoticonCellIdentifier, forIndexPath: indexPath) as! CFEmoticonCell
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: kEmoticonCellIdentifier, for: indexPath) as! CFEmoticonCell
         
         /*
          0 - 0   7 - 1  13 - 2
@@ -143,17 +143,17 @@ extension CFEmoticonKeyboardView: UICollectionViewDataSource, UICollectionViewDe
         return cell
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! CFEmoticonCell
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let cell = collectionView.cellForItem(at: indexPath) as! CFEmoticonCell
         //  执行闭包回调
         if (cell.emoticonM?.isEmpty)! == false {
-            selectedEmoticonCallBack(emoticon: cell.emoticonM!)
+            selectedEmoticonCallBack(cell.emoticonM!)
             //  添加最近表情符号
             emoticonVM.favorite(cell.emoticonM!)
         }
     }
     
-    func scrollViewDidEndDecelerating(scrollView: UIScrollView) {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         self.collectionView.reloadData()
     }
 }
@@ -166,12 +166,12 @@ private class CFEmoticonCell: UICollectionViewCell {
     var emoticonM: CFEmoticonM? {
         didSet {
             //  设置模型
-            emoticonButton.setImage(UIImage(contentsOfFile: emoticonM!.imagePath), forState: UIControlState.Normal)
-            emoticonButton.setTitle(emoticonM?.emoji, forState: UIControlState.Normal)
+            emoticonButton.setImage(UIImage(contentsOfFile: emoticonM!.imagePath), for: UIControlState())
+            emoticonButton.setTitle(emoticonM?.emoji, for: UIControlState())
 
             if emoticonM!.isRemove {
-                emoticonButton.setImage(UIImage(named: "compose_emotion_delete"), forState: UIControlState.Normal)
-                emoticonButton.setImage(UIImage(named: "compose_emotion_delete_highlighted"), forState: UIControlState.Highlighted)
+                emoticonButton.setImage(UIImage(named: "compose_emotion_delete"), for: UIControlState())
+                emoticonButton.setImage(UIImage(named: "compose_emotion_delete_highlighted"), for: UIControlState.highlighted)
             }
         }
     }
@@ -181,10 +181,10 @@ private class CFEmoticonCell: UICollectionViewCell {
         super.init(frame: frame)
         
         contentView.addSubview(emoticonButton)
-        emoticonButton.frame = CGRectInset(bounds, 4, 4)
-        emoticonButton.backgroundColor = UIColor.whiteColor()
-        emoticonButton.titleLabel?.font = UIFont.systemFontOfSize(32)
-        emoticonButton.userInteractionEnabled = false
+        emoticonButton.frame = bounds.insetBy(dx: 4, dy: 4)
+        emoticonButton.backgroundColor = UIColor.white
+        emoticonButton.titleLabel?.font = UIFont.systemFont(ofSize: 32)
+        emoticonButton.isUserInteractionEnabled = false
         
     }
     
@@ -193,16 +193,16 @@ private class CFEmoticonCell: UICollectionViewCell {
     }
     
     // MARK: - 懒加载控件
-    private lazy var emoticonButton = UIButton()
+    fileprivate lazy var emoticonButton = UIButton()
 }
 
 
 // MARK: - 表情键盘布局
 private class CFEmoticonFlowLayout: UICollectionViewFlowLayout {
     /// 准备布局，第一次使用时被调用，已经完成自动布局。准备布局方法，会在数据（cell个数前）调用，可以在次准备 layout 属性
-    private override func prepareLayout() {
+    fileprivate override func prepare() {
         //        print(collectionView)
-        super.prepareLayout()
+        super.prepare()
         minimumLineSpacing = 0
         minimumInteritemSpacing = 0
         
@@ -212,7 +212,7 @@ private class CFEmoticonFlowLayout: UICollectionViewFlowLayout {
         let margin = (collectionView!.bounds.height - 3 * w) - 0.001
         sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: margin, right: 0)
         
-        scrollDirection = UICollectionViewScrollDirection.Horizontal
+        scrollDirection = UICollectionViewScrollDirection.horizontal
     }
 }
 

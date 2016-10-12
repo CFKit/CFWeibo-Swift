@@ -7,6 +7,26 @@
 //
 
 import UIKit
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 /// 微博视图模型，供界面显示只用
 class CFStatusVM: NSObject {
@@ -29,8 +49,8 @@ class CFStatusVM: NSObject {
     }
 
     /// 用户头像 URL
-    var userIconURL: NSURL? {
-        return NSURL(string: status.user?.profile_image_url ?? "")
+    var userIconURL: URL? {
+        return URL(string: status.user?.profile_image_url ?? "")
     }
     
     /// 认证类型
@@ -54,32 +74,32 @@ class CFStatusVM: NSObject {
     }
     
     /// 配图缩略图 URL 数组(如果原创微博有图，在 thumbnaiURLs数组中记录)
-    var thumbnailURLs: [NSURL]?
+    var thumbnailURLs: [URL]?
     /// 中等图片 URL 数组
-    var bmiddleURLs: [NSURL]? {
+    var bmiddleURLs: [URL]? {
         //  1. 判断 thumbnailURLs 是否为 nil
         guard let urls = thumbnailURLs else {
             return nil
         }
         //  2. 顺序替换每一个 url 字符串中的单词
-        var array = [NSURL]()
+        var array = [URL]()
         for url in urls {
-            let urlString = url.absoluteString.stringByReplacingOccurrencesOfString("/thumbnail/", withString: "/bmiddle/")
-            array.append(NSURL(string: urlString)!)
+            let urlString = url.absoluteString.replacingOccurrences(of: "/thumbnail/", with: "/bmiddle/")
+            array.append(URL(string: urlString)!)
         }
         return array;
     }
     /// 原始图片数组
-    var originalURLs: [NSURL]? {
+    var originalURLs: [URL]? {
         //  1. 判断 thumbnailURLs 是否为 nil
         guard let urls = thumbnailURLs else {
             return nil
         }
         //  2. 顺序替换每一个 url 字符串中的单词
-        var array = [NSURL]()
+        var array = [URL]()
         for url in urls {
-            let urlString = url.absoluteString.stringByReplacingOccurrencesOfString("/thumbnail/", withString: "/large/")
-            array.append(NSURL(string: urlString)!)
+            let urlString = url.absoluteString.replacingOccurrences(of: "/thumbnail/", with: "/large/")
+            array.append(URL(string: urlString)!)
         }
         return array
     }
@@ -89,10 +109,10 @@ class CFStatusVM: NSObject {
         
         //  如果是转发微博，取 retweeted_status 的 pic_urls
         if let urls = status.retweeted_status?.pic_urls ?? status.pic_urls {
-            thumbnailURLs = [NSURL]()
+            thumbnailURLs = [URL]()
             for dict in urls {
                 //  第一个！ 确保 key 一定在字典存在。第二个！ 确保 url 一定能创建出 URL。通常由后台返回的 URL 是添加过百分号转义的
-                thumbnailURLs?.append(NSURL(string: dict["thumbnail_pic"]!)!)
+                thumbnailURLs?.append(URL(string: dict["thumbnail_pic"]!)!)
             }
         }
         
@@ -104,6 +124,6 @@ class CFStatusVM: NSObject {
 extension CFStatusVM {
     override var description: String {
         let keys = ["status", "thumbnailURLs", "bmiddleURLs", "originalURLs"]
-        return dictionaryWithValuesForKeys(keys).description
+        return dictionaryWithValues(forKeys: keys).description
     }
 }

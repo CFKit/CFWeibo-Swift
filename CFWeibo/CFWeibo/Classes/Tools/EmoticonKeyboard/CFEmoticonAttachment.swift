@@ -25,7 +25,7 @@ class CFEmoticonAttachment: NSTextAttachment {
     
     
     
-    class func emoticonAttributeText(emoticon: CFEmoticonM, font: UIFont) -> NSAttributedString {
+    class func emoticonAttributeText(_ emoticon: CFEmoticonM, font: UIFont) -> NSAttributedString {
         let attachment = CFEmoticonAttachment(chs: emoticon.chs)
         
         attachment.image = UIImage(contentsOfFile: emoticon.imagePath)

@@ -23,7 +23,7 @@ extension String {
         
         //  定义正则表达式
         //  DotMatchesLineSeparators 能否让 . 匹配换行符 - 通常用在抓取网页数据
-        let regex = try! NSRegularExpression(pattern: pattern, options: [NSRegularExpressionOptions.DotMatchesLineSeparators])
+        let regex = try! NSRegularExpression(pattern: pattern, options: [NSRegularExpression.Options.dotMatchesLineSeparators])
         
         //  使用正则表达式匹配字符串
         //  1. firstMatchInString 匹配第一个结果
@@ -31,12 +31,12 @@ extension String {
          numberOfRanges: Int 返回匹配的 range 个数
          rangeAtIndex(idx: Int) -> NSRange 返回索引对应的 NSRange
          */
-        guard let result = regex.firstMatchInString(self, options: [], range: NSRange(location: 0, length: self.characters.count)) else {
+        guard let result = regex.firstMatch(in: self, options: [], range: NSRange(location: 0, length: self.characters.count)) else {
             return nil
         }
         
-        let link = (self as NSString).substringWithRange(result.rangeAtIndex(1))
-        let text = (self as NSString).substringWithRange(result.rangeAtIndex(2))
+        let link = (self as NSString).substring(with: result.rangeAt(1))
+        let text = (self as NSString).substring(with: result.rangeAt(2))
 
         return (link, text)
     }

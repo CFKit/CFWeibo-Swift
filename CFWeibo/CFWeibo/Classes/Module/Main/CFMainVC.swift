@@ -20,7 +20,7 @@ class CFMainVC: UITabBarController {
     /// 视图将要出现，可能会被调用多次。
     ///
     /// - parameter animated: 是否显示动画
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         //  视图将要出现的时候 tabbar 中的按钮才会创建
 //        print(tabBar.subviews)
@@ -30,7 +30,7 @@ class CFMainVC: UITabBarController {
      按钮监听方法，由运行循环调用的，因此不能直接使用 private。在 swift 如果不使用 private 修饰，是全局共享的。
      @objc 关键字能够保证运行循环能够调用，走 oc 的消息机制，调用之前不再判断方法是否存在和 private 联用，就能够做到对方法的保护
      */
-    @objc private func clickComposeButton() {
+    @objc fileprivate func clickComposeButton() {
         var vc: UIViewController
         if CFUserAccountVM.sharedUserAccount.userLogin {
             vc = CFComposeVC()
@@ -39,14 +39,14 @@ class CFMainVC: UITabBarController {
         }
         vc = CFComposeVC()
         let nav = UINavigationController(rootViewController: vc)
-        presentViewController(nav, animated: true, completion: nil)
+        present(nav, animated: true, completion: nil)
     
     }
     
     /**
      设置撰写按钮位置
      */
-    private func setupComposedButton() {
+    fileprivate func setupComposedButton() {
         //  控制器总数
         let count = childViewControllers.count
         //  计算每个按钮宽度
@@ -54,13 +54,13 @@ class CFMainVC: UITabBarController {
         let rect = CGRect(x: 0, y: 0, width: w, height: tabBar.bounds.height)
         
         //  设置按钮位置
-        composedButton.frame = CGRectOffset(rect, 2 * w, 0)
+        composedButton.frame = rect.offsetBy(dx: 2 * w, dy: 0)
     }
     
     /**
      添加所有子控制器
      */
-    private func addChildViewControllers() {
+    fileprivate func addChildViewControllers() {
         //  设置 tabbar 的渲染颜色
 //        tabBar.tintColor = UIColor.orangeColor()
         
@@ -78,7 +78,7 @@ class CFMainVC: UITabBarController {
      /// - parameter title:             title
      /// - parameter imageName:         图像名
      /// - parameter selectedImageName: 选中图像
-    private func addChildViewController(vc: UIViewController, title: String, imageName: String, selectedImageName: String) {
+    fileprivate func addChildViewController(_ vc: UIViewController, title: String, imageName: String, selectedImageName: String) {
         //  设置标题
         vc.title = title
         vc.tabBarItem.image = UIImage(named: imageName)
@@ -91,15 +91,15 @@ class CFMainVC: UITabBarController {
     }
     
     //  MARK: - 懒加载控件
-    private lazy var composedButton: UIButton = {
+    fileprivate lazy var composedButton: UIButton = {
         //  自定义的 button
         let btn = UIButton()
-        btn.setImage(UIImage(named: "tabbar_compose_icon_add"), forState: UIControlState.Normal)
-        btn.setImage(UIImage(named: "tabbar_compose_icon_add_highlighted"), forState: UIControlState.Highlighted)
-        btn.setBackgroundImage(UIImage(named: "tabbar_compose_button"), forState: UIControlState.Normal)
-        btn.setBackgroundImage(UIImage(named: "tabbar_compose_button_highlighted"), forState: UIControlState.Highlighted)
+        btn.setImage(UIImage(named: "tabbar_compose_icon_add"), for: UIControlState())
+        btn.setImage(UIImage(named: "tabbar_compose_icon_add_highlighted"), for: UIControlState.highlighted)
+        btn.setBackgroundImage(UIImage(named: "tabbar_compose_button"), for: UIControlState())
+        btn.setBackgroundImage(UIImage(named: "tabbar_compose_button_highlighted"), for: UIControlState.highlighted)
         //  添加监听方法
-        btn.addTarget(self, action: #selector(CFMainVC.clickComposeButton), forControlEvents: UIControlEvents.TouchUpInside)        
+        btn.addTarget(self, action: #selector(CFMainVC.clickComposeButton), for: UIControlEvents.touchUpInside)        
         self.tabBar.addSubview(btn)
         
         return btn

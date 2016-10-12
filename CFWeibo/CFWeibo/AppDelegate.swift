@@ -8,26 +8,46 @@
 //  http://objeccn.io/issue-19-2/
 import UIKit
 import AFNetworking
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
         //  打印用户账户信息
 //        printLog(UserAccountVM.sharedUserAccount.userAccount)
         //  注册通知(object：监听有哪个对象发出的通知)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AppDelegate.switchRootVC(_:)), name: CFSwitchRootVCNotification, object: nil)
 
-        SQLiteManager.sharedManager
+        NotificationCenter.default.addObserver(self, selector: #selector(AppDelegate.switchRootVC(_:)), name: CFSwitchRootVCNotification, object: nil)
+
         setupNetwork()
         setUpAppearance()
         
-        window = UIWindow(frame: UIScreen.mainScreen().bounds)
-        window?.backgroundColor = UIColor.whiteColor()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.backgroundColor = UIColor.white
         window?.rootViewController = defaultRootViewController()
         window?.makeKeyAndVisible()
 
@@ -35,13 +55,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self, name: CFSwitchRootVCNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: CFSwitchRootVCNotification, object: nil)
     }
     
     /// 切换控制器通知的监听方法
-    func switchRootVC(notification: NSNotification) {
+    func switchRootVC(_ notification: Notification) {
         //  获得类的命名空间
-        let nameSpace = NSBundle.mainBundle().infoDictionary!["CFBundleExecutable"]
+        let nameSpace = Bundle.main.infoDictionary!["CFBundleExecutable"]
         guard let name = nameSpace as? String else { return }
         //  拼接命名空间并转为 classtype 注意拼接时必须均为 String 类型。 不能出现可选
         let classVC: AnyClass? = NSClassFromString("\(name).\(notification.object as! String)")
@@ -58,12 +78,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      修改全局外观
         修改导航栏外观尽量早，一经修改全局有效
      */
-    private func setUpAppearance() {
-        UINavigationBar.appearance().tintColor = UIColor.orangeColor()
-        UITabBar.appearance().tintColor = UIColor.orangeColor()
+    fileprivate func setUpAppearance() {
+        UINavigationBar.appearance().tintColor = UIColor.orange
+        UITabBar.appearance().tintColor = UIColor.orange
     }
     
-    private func defaultRootViewController() -> UIViewController {
+    fileprivate func defaultRootViewController() -> UIViewController {
         //  1. 判断用户是否登陆
         if CFUserAccountVM.sharedUserAccount.userLogin {
             //  2. 如果登陆，判断是否有新版本
@@ -74,23 +94,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     /// 判断是否新版本
-    private func isNewVersion() -> Bool {
+    fileprivate func isNewVersion() -> Bool {
         let versionKey = "CFBundleShortVersionString"
         //  1. 当前应用程序的版本号
-        let bundleVersion = Double(NSBundle.mainBundle().infoDictionary![versionKey] as! String)
+        let bundleVersion = Double(Bundle.main.infoDictionary![versionKey] as! String)
         //  2. 之前保存的程序版本号
-        let saxboxVersion = NSUserDefaults.standardUserDefaults().doubleForKey(versionKey)
+        let saxboxVersion = UserDefaults.standard.double(forKey: versionKey)
         //  3. 保存当前版本
-        NSUserDefaults.standardUserDefaults().setDouble(bundleVersion!, forKey: versionKey)
+        UserDefaults.standard.set(bundleVersion!, forKey: versionKey)
         
         //  4. 比较两个版本，返回结果
         return bundleVersion > saxboxVersion
     }
     
     //  设置网络指示器
-    private func setupNetwork() {
+    fileprivate func setupNetwork() {
         //  设置网络指示器，一旦设置，发起网络请求，会在状态栏显示菊花，只负责 AFN 的网络请求，其他的网络框架不负责
-        AFNetworkActivityIndicatorManager.sharedManager().enabled = true;
+        AFNetworkActivityIndicatorManager.shared().isEnabled = true;
         //  设置缓存大小 NSURLCache -> GET 请求的数据会被缓存
     
         // 缓存的磁盘路径： /Library/Caches/(application bundle id)
@@ -98,12 +118,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //  内存缓存：   memoryCapacity  4M
         //  磁盘缓存：   diskCapacity    20M
         //  提示： URLSession 只用 dataTask 会被缓存。 downloadTask/uploadTask 都不会被缓存
-        let cache = NSURLCache(memoryCapacity: 4 * 1024 * 1024, diskCapacity: 20 * 1024 * 1024, diskPath: nil)
-        NSURLCache.setSharedURLCache(cache)
+        let cache = URLCache(memoryCapacity: 4 * 1024 * 1024, diskCapacity: 20 * 1024 * 1024, diskPath: nil)
+        //  TODO: 修改 1
+        URLCache.shared = cache
+//        URLCache.setSharedURLCache(cache)
         
     }
     
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(_ application: UIApplication) {
         CFStatusDAL.clearDatabaseCache()
     }
     

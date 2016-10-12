@@ -20,7 +20,7 @@ class CFEmoticonM: NSObject {
     var png: String?
     
     var imagePath: String {
-        return type == "0" ?  NSBundle.mainBundle().bundlePath + "/Emoticons.bundle/" + png! : ""
+        return type == "0" ?  Bundle.main.bundlePath + "/Emoticons.bundle/" + png! : ""
     }
     
      /// 图片类型 (0：png，1：emoji)
@@ -29,10 +29,10 @@ class CFEmoticonM: NSObject {
      /// emoji 编码
     var code: String? {
         didSet {
-            let scanner = NSScanner(string: code!)
+            let scanner = Scanner(string: code!)
             var value: UInt32 = 0
-            scanner.scanHexInt(&value)
-            emoji = String(Character(UnicodeScalar(value)))
+            scanner.scanHexInt32(&value)
+            emoji = String(Character(UnicodeScalar(value)!))
         }
     }
     
@@ -59,15 +59,15 @@ class CFEmoticonM: NSObject {
     
     init(dict: [String: String]) {
         super.init()
-        setValuesForKeysWithDictionary(dict)
+        setValuesForKeys(dict)
     }
     
-    override func setValue(value: AnyObject?, forUndefinedKey key: String) {
+    override func setValue(_ value: Any?, forUndefinedKey key: String) {
         
     }
     
     override var description: String {
         let keys = ["chs", "cht", "gif", "png", "type", "type", "code", "isEmpty", "isRemove"]
-        return dictionaryWithValuesForKeys(keys).description
+        return dictionaryWithValues(forKeys: keys).description
     }
 }

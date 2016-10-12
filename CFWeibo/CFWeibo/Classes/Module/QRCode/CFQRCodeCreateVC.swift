@@ -15,9 +15,9 @@ class CFQRCodeCreateVC: UIViewController {
     
     @IBOutlet weak var textField: UITextField!
     
-    @IBAction func createQRCodeClicked(sender: AnyObject) {
+    @IBAction func createQRCodeClicked(_ sender: AnyObject) {
         
-        if !UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.PhotoLibrary) {
+        if !UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.photoLibrary) {
             
             if let image = createQRCode(textField.text ?? "", avatarImage: nil) {
                 self.iconImageView.image = image
@@ -30,7 +30,7 @@ class CFQRCodeCreateVC: UIViewController {
         let imagePickerVC = UIImagePickerController()
         imagePickerVC.delegate = self
         //        imagePickerVC.allowsEditing = true
-        self.presentViewController(imagePickerVC, animated: true, completion: nil)
+        self.present(imagePickerVC, animated: true, completion: nil)
         
     }
     
@@ -50,7 +50,7 @@ class CFQRCodeCreateVC: UIViewController {
      *  2. 生成的头像，不要遮挡住三个定位点
      *  3. 二维码的识别度很高，有一定的容错性。
      */
-    private func createQRCode(string: String, avatarImage: UIImage?) -> UIImage? {
+    fileprivate func createQRCode(_ string: String, avatarImage: UIImage?) -> UIImage? {
         
         //  建立一个滤镜
         let qrFilter = CIFilter(name: "CIQRCodeGenerator")
@@ -58,7 +58,7 @@ class CFQRCodeCreateVC: UIViewController {
         qrFilter?.setDefaults()
         
         //  通过 KVC 设置滤镜的内容
-        qrFilter?.setValue(string.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true), forKey: "inputMessage")
+        qrFilter?.setValue(string.data(using: String.Encoding.utf8, allowLossyConversion: true), forKey: "inputMessage")
 
         guard let qrImage = qrFilter?.outputImage else { return nil }
         
@@ -69,29 +69,29 @@ class CFQRCodeCreateVC: UIViewController {
         colorFilter?.setValue(CIColor(red: 1.0, green: 127.0 / 255.0, blue: 0) , forKey: "inputColor0")
         colorFilter?.setValue(CIColor(red: 1.0, green: 1.0, blue: 1.0), forKey: "inputColor1")
         
-        let transform = CGAffineTransformMakeScale(100, 100)
+        let transform = CGAffineTransform(scaleX: 100, y: 100)
         
-        guard let transformImage = colorFilter?.outputImage?.imageByApplyingTransform(transform) else { return nil }
+        guard let transformImage = colorFilter?.outputImage?.applying(transform) else { return nil }
         
-        let codeImage = UIImage(CIImage: transformImage)
+        let codeImage = UIImage(ciImage: transformImage)
         return insertAvatarImage(codeImage, avatarImage: avatarImage)
     }
     
     //  合成头像
-    private func insertAvatarImage(codeImage: UIImage, avatarImage: UIImage?) -> UIImage {
+    fileprivate func insertAvatarImage(_ codeImage: UIImage, avatarImage: UIImage?) -> UIImage {
         let size = codeImage.size
         
         //  1. 开启图像上下文
         UIGraphicsBeginImageContext(size)
         
         //  2. 绘制二维码图像
-        codeImage.drawInRect(CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        codeImage.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
         
         if let avatarImg = avatarImage {
             //  3. 计算头像大小
             let w = size.width * 0.175
             let x = (size.width - size.width * 0.175) * 0.5
-            avatarImg.drawInRect(CGRectMake(x, x, w, w))
+            avatarImg.draw(in: CGRect(x: x, y: x, width: w, height: w))
         }
         
         //  4. 从上下文中取出图像
@@ -100,20 +100,20 @@ class CFQRCodeCreateVC: UIViewController {
         //  5. 关闭上下文
         UIGraphicsEndImageContext()
         
-        return image
+        return image!
     }
     
-    @objc private func image(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject) {
+    @objc fileprivate func image(_ image: UIImage, didFinishSavingWithError error: NSError?, contextInfo: AnyObject) {
         
         let message = (error == nil) ? "保存成功" : "保存失败"
-        SVProgressHUD.showInfoWithStatus(message)
+        SVProgressHUD.showInfo(withStatus: message)
     }
 
 }
 
 extension CFQRCodeCreateVC: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    func imagePickerController(picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingImage image: UIImage, editingInfo: [String : AnyObject]?) {
         
         let scaleImage = image.scaleImageToWidth(kScreenWidth)
         
@@ -121,14 +121,14 @@ extension CFQRCodeCreateVC: UIImagePickerControllerDelegate, UINavigationControl
             self.iconImageView.image = image
             UIImageWriteToSavedPhotosAlbum(image, self, #selector(CFQRCodeCreateVC.image(_:didFinishSavingWithError:contextInfo:)), nil)
         }
-        self.dismissViewControllerAnimated(true, completion: nil)
+        self.dismiss(animated: true, completion: nil)
         
 //        let vc = UIStoryboard.initialViewController("QRCode", identifier: "CFCutImageVC") as! CFCutImageVC
 //        vc.selectedImage = scaleImage
 //        picker.navigationController?.pushViewController(vc, animated: true)
     }
     
-    func imagePickerControllerDidCancel(picker: UIImagePickerController) {
-        self.dismissViewControllerAnimated(true, completion: nil)
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.dismiss(animated: true, completion: nil)
     }
 }

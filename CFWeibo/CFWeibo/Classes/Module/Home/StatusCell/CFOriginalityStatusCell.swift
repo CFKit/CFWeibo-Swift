@@ -14,16 +14,16 @@ let kOriginalityStatusIdentifier = "CFOriginalityStatusCell"
 class CFOriginalityStatusCell: CFStatusCell {
     override func setupUI() {
         super.setupUI()
-        pictureView.backgroundColor = UIColor.whiteColor()
+        pictureView.backgroundColor = UIColor.white
         
         let cons = pictureView.ff_AlignVertical(
-            type: ff_AlignType.BottomLeft,
+            type: ff_AlignType.bottomLeft,
             referView: contentLabel,
             size: CGSize(width: kStatusPictureMaxWidth, height: kStatusPictureMaxWidth),
             offset: CGPoint(x: 0, y: kStatusCellMargin))
         //  记录约束
-        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Width)
-        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Height)
-        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Top)
+        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.width)
+        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.height)
+        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.top)
     }
 }

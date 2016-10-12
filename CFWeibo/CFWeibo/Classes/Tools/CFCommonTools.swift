@@ -8,11 +8,9 @@
 /// 常用工具
 import Foundation
 
-
 //  MARK: - 通知常量定义
-/// 切换更控制器通知
-let CFSwitchRootVCNotification = "CFSwitchRootVCNotification"
-
+/// 切换根控制器通知
+let CFSwitchRootVCNotification = NSNotification.Name(rawValue: "CFSwitchRootVCNotification")
 
 
 //  MARK: - 输出日志
@@ -23,7 +21,7 @@ let CFSwitchRootVCNotification = "CFSwitchRootVCNotification"
 /// - parameter file:     文件名
 /// - parameter method:   方法名
 /// - parameter line:     代码行数
-func printLog<T> (message: T,
+func printLog<T> (_ message: T,
     logError: Bool = false,
     file: String = #file,
     method: String = #function,

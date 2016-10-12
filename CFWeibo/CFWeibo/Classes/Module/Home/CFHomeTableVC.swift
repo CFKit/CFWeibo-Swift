@@ -27,32 +27,32 @@ class CFHomeTableVC: CFBaseTableVC {
     }
 
     deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
+        NotificationCenter.default.removeObserver(self)
     }
     
     
     //  MARK: - 懒加载控件
     /// Modal 动画提供者
-    private lazy var photoBrowserAnimator = CFPhotoBrowserAnimator()
+    fileprivate lazy var photoBrowserAnimator = CFPhotoBrowserAnimator()
     
     /// 微博列表数据模型
-    private lazy var statusListVM = CFStatusListVM()
+    fileprivate lazy var statusListVM = CFStatusListVM()
 
-    private lazy var pulldownMessageLabel: UILabel = {
+    fileprivate lazy var pulldownMessageLabel: UILabel = {
      
-        let label = UILabel(title: nil, color: UIColor.whiteColor(), fontSize: 16)
-        label.backgroundColor = UIColor.orangeColor()
-        label.textAlignment = NSTextAlignment.Center
+        let label = UILabel(title: nil, color: UIColor.white, fontSize: 16)
+        label.backgroundColor = UIColor.orange
+        label.textAlignment = NSTextAlignment.center
         
-        self.navigationController?.navigationBar.insertSubview(label, atIndex: 0)
+        self.navigationController?.navigationBar.insertSubview(label, at: 0)
 
         return label
     }()
     
     /// 上拉刷新视图
-    private lazy var pullupView: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.WhiteLarge)
-        indicator.color = UIColor.darkGrayColor()
+    fileprivate lazy var pullupView: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.whiteLarge)
+        indicator.color = UIColor.darkGray
 
         return indicator
     } ()
@@ -61,21 +61,21 @@ class CFHomeTableVC: CFBaseTableVC {
 //  MARK: - 数据处理
 extension CFHomeTableVC {
     
-    @objc private func qrCodeShow() {
+    @objc fileprivate func qrCodeShow() {
     
 
-        self.presentViewController(UIStoryboard.initialViewController("QRCode"), animated: true, completion: nil)
+        self.present(UIStoryboard.initialViewController("QRCode"), animated: true, completion: nil)
     }
     
     /// 加载数据
     func loadData() {
         //  只会播放动画，不会加载数据
-        statusListVM.loadStatus(pullupView.isAnimating()).subscribeNext({ (result) in
-            self.showPulldownMessage((result as! NSNumber).integerValue)
+        statusListVM.loadStatus(pullupView.isAnimating).subscribeNext({ (result) in
+            self.showPulldownMessage((result as! NSNumber).intValue)
             }, error: { (error) in
                 printLog(error)
                 self.endLoadingData()
-                SVProgressHUD.showInfoWithStatus("您的网络不给力")
+                SVProgressHUD.showInfo(withStatus: "您的网络不给力")
         }) {
             //  刷新表格
             self.tableView.reloadData()
@@ -83,39 +83,39 @@ extension CFHomeTableVC {
         }
     }
     
-    private func showPulldownMessage(count: Int) {
+    fileprivate func showPulldownMessage(_ count: Int) {
         let title = count == 0 ? "没有新微博" : "刷新到 \(count) 条微博"
         var rect = CGRect(x: 0, y: 44, width: kScreenWidth, height: 0)
         
         pulldownMessageLabel.frame = rect
         pulldownMessageLabel.text = title
         
-        UIView.animateWithDuration(0.5, animations: {
+        UIView.animate(withDuration: 0.5, animations: {
             rect.size.height = 40
             self.pulldownMessageLabel.frame = rect
             
-        }) { (_) in
-            UIView.animateWithDuration(0.5, animations: {
+        }, completion: { (_) in
+            UIView.animate(withDuration: 0.5, animations: {
                 rect.size.height = 0
                 self.pulldownMessageLabel.frame = rect
                 
             })
-        }
+        }) 
         
     }
     
-    private func endLoadingData() {
+    fileprivate func endLoadingData() {
         self.refreshControl?.endRefreshing()
         self.pullupView.stopAnimating()
     }
     
     
     //  MARK: - 图片点击事件
-    private func clickedPictureView(notification: NSNotification){
-        guard let urls = notification.userInfo![kStatusPictureViewSelectedPhotoURLsKey] as? [NSURL] else {
+    fileprivate func clickedPictureView(_ notification: Notification){
+        guard let urls = (notification as NSNotification).userInfo![kStatusPictureViewSelectedPhotoURLsKey] as? [URL] else {
             return
         }
-        guard let indexPath = notification.userInfo![kStatusPictureViewSelectedPhotoIndexPathKey] as? NSIndexPath else {
+        guard let indexPath = (notification as NSNotification).userInfo![kStatusPictureViewSelectedPhotoIndexPathKey] as? IndexPath else {
             return
         }
         //  获取图片视图的对象
@@ -130,12 +130,12 @@ extension CFHomeTableVC {
         //  1. 指定动画的提供者 transitioning - 转场，从一个界面跳转到另外一个界面的动画效果
         vc.transitioningDelegate = self.photoBrowserAnimator
         //  2. 指定 modal 展现样式是自定义
-        vc.modalPresentationStyle = UIModalPresentationStyle.Custom
+        vc.modalPresentationStyle = UIModalPresentationStyle.custom
         //  3. 计算位置
         
-        self.photoBrowserAnimator.prepareAnimator(picView.screenRect(indexPath), toRect: picView.fullScreenRect(indexPath), url: urls[indexPath.item], placeholderImage: picView.images![indexPath.item], picView: picView)
+        self.photoBrowserAnimator.prepareAnimator(picView.screenRect(indexPath), toRect: picView.fullScreenRect(indexPath), url: urls[(indexPath as NSIndexPath).item], placeholderImage: picView.images![(indexPath as NSIndexPath).item], picView: picView)
         //  这里会对 self 强引用，进行copy。下面的deinit不会被执行到。
-        self.presentViewController(vc, animated: true, completion: nil)
+        self.present(vc, animated: true, completion: nil)
 
     }
 
@@ -145,9 +145,9 @@ extension CFHomeTableVC {
 //  MARK: - 代理回调
 extension CFHomeTableVC: CFStatusCellDelegate {
     //  MARK: -- CFStatusCellDelegate
-    func statusCellDidSelectedLinkText(text: String) {
+    func statusCellDidSelectedLinkText(_ text: String) {
 //        print("超链接文字: \(text)")
-        guard let url = NSURL(string: text) else { return }
+        guard let url = URL(string: text) else { return }
         let vc = CFHomeWebVC()
         vc.url = url
         vc.hidesBottomBarWhenPushed = true
@@ -155,19 +155,19 @@ extension CFHomeTableVC: CFStatusCellDelegate {
     }
     
     //  MARK: -- UITableViewDelegate,UITableViewDataSource
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return statusListVM.statusList.count ?? 0
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return statusListVM.statusList.count
     }
 
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //  获得可重用 cell 的同时要获得行高
-        let statusVM = statusListVM.statusList[indexPath.row]
-        let statusCell = tableView.dequeueReusableCellWithIdentifier(statusVM.statusCellIdentifier, forIndexPath: indexPath) as! CFStatusCell
+        let statusVM = statusListVM.statusList[(indexPath as NSIndexPath).row]
+        let statusCell = tableView.dequeueReusableCell(withIdentifier: statusVM.statusCellIdentifier, for: indexPath) as! CFStatusCell
         statusCell.statusCellDelegate = self
         statusCell.statusVM = statusVM
         
         //  判断当前的 indexpath 是否是驻足的最后一项，如果是开始上拉动画
-        if indexPath.row == statusListVM.statusList.count - 1 {
+        if (indexPath as NSIndexPath).row == statusListVM.statusList.count - 1 {
             pullupView.startAnimating()
             loadData()
         }
@@ -184,12 +184,12 @@ extension CFHomeTableVC: CFStatusCellDelegate {
         
         行高的缓存，只计算一次，提高效率
     */
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        let statusVM = statusListVM.statusList[indexPath.row]
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let statusVM = statusListVM.statusList[(indexPath as NSIndexPath).row]
         //  判断视图模型行高是否为 0， 为 0 时计算行高并负值
         if statusVM.statusCellHeight ==  0 {
 
-            let cell = tableView.dequeueReusableCellWithIdentifier(statusVM.statusCellIdentifier) as! CFStatusCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: statusVM.statusCellIdentifier) as! CFStatusCell
             statusVM.statusCellHeight = cell.rowHeitht(statusVM)
             
         }
@@ -200,7 +200,7 @@ extension CFHomeTableVC: CFStatusCellDelegate {
 
 //  MARK: - 视图创建
 extension CFHomeTableVC {
-    private func preparePhotoBrowserModal() {
+    fileprivate func preparePhotoBrowserModal() {
         /**
          注册通知
          name:       通知名
@@ -209,7 +209,7 @@ extension CFHomeTableVC {
          block:      接收到通知执行的方法
          使用通知的 block 只要使用 self 一定会循环引用
          */
-        NSNotificationCenter.defaultCenter().addObserverForName(kStatusPictureViewSelectedPhotoNotification, object: nil, queue: nil) { [weak self] (notification) in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: kStatusPictureViewSelectedPhotoNotification), object: nil, queue: nil) { [weak self] (notification) in
             //            printLog(notification)
             //            printLog(NSThread.currentThread())
             
@@ -218,25 +218,25 @@ extension CFHomeTableVC {
 
     }
     
-    private func prepareNavigation() {
+    fileprivate func prepareNavigation() {
 
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(imageName: "navigationbar_pop", target: self, selector: #selector(CFHomeTableVC.qrCodeShow))
         
         
     }
     
-    private func prepareTableView() {
+    fileprivate func prepareTableView() {
         //  注册 cell
-        self.tableView.registerClass(CFForwardStatusCell.self, forCellReuseIdentifier: kForwardStatusCellIdentifier)
-        self.tableView.registerClass(CFOriginalityStatusCell.self, forCellReuseIdentifier: kOriginalityStatusIdentifier)
+        self.tableView.register(CFForwardStatusCell.self, forCellReuseIdentifier: kForwardStatusCellIdentifier)
+        self.tableView.register(CFOriginalityStatusCell.self, forCellReuseIdentifier: kOriginalityStatusIdentifier)
         //  一下两句可以自动处理行高（提示：如果不使用自动计算行号 UITableViewAutomaticDimension 一定不要设置底部约束）
         tableView.estimatedRowHeight = 300
-        tableView.separatorStyle = UITableViewCellSeparatorStyle.None
+        tableView.separatorStyle = UITableViewCellSeparatorStyle.none
         
         //  准备下拉刷新控件
         refreshControl = CFRefreshControl()
         //        (refreshControl as! CFRefreshControl).addRefreshing(self, selector: #selector(loadData))
-        refreshControl?.addTarget(self, action: #selector(loadData), forControlEvents: UIControlEvents.ValueChanged)
+        refreshControl?.addTarget(self, action: #selector(loadData), for: UIControlEvents.valueChanged)
         
         //  准备上拉提示控件
         tableView.tableFooterView = pullupView

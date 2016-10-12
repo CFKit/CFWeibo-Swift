@@ -19,8 +19,8 @@ enum RequestMethod: String {
 class CFNetworkTools: AFHTTPSessionManager {
     
     //  MARK: - App 信息
-    private let clientId = "3020759535"
-    private let appSecret = "c7364dc8755f751800d50a2ae4dc1a0a"
+    fileprivate let clientId = "3020759535"
+    fileprivate let appSecret = "c7364dc8755f751800d50a2ae4dc1a0a"
     let redirectUri = "http://www.hao123.com"
     
     //  单例
@@ -41,9 +41,9 @@ class CFNetworkTools: AFHTTPSessionManager {
     /// - see: [http://open.weibo.com/wiki/2/statuses/upload](http://open.weibo.com/wiki/2/statuses/upload)
     ///
     /// - returns: RACSignal
-    func sendStatus(status: String, image: UIImage?) -> RACSignal {
+    func sendStatus(_ status: String, image: UIImage?) -> RACSignal {
         
-        let params = ["status": status]
+        let params = ["status": status as AnyObject] as [String : AnyObject]
         
         //  如果没有图片，就是文本微博
         if image == nil {
@@ -58,14 +58,14 @@ class CFNetworkTools: AFHTTPSessionManager {
     /// - parameter since_id:   返回 id 比 since_id 大的微博
     /// - parameter max_id:     返回 id 小于或等于 max_id 的微博
     /// - see:[http://open.weibo.com/wiki/2/statuses/home_timeline](http://open.weibo.com/wiki/2/statuses/home_timeline)
-    func loadStatus(since_id since_id: Int, max_id: Int) -> RACSignal {
+    func loadStatus(since_id: Int, max_id: Int) -> RACSignal {
         let urlString = "https://api.weibo.com/2/statuses/home_timeline.json"
         var params = [String: AnyObject]()
         if since_id > 0 {
-            params["since_id"] = since_id
+            params["since_id"] = since_id as AnyObject?
         } else if max_id > 0 {
             //  TODO: max_id 错误
-            params["max_id"] =  max_id - 1
+            params["max_id"] =  (max_id - 1) as AnyObject?
         }
         
         return request(.GET, URLString: urlString, parameters: params)
@@ -75,10 +75,10 @@ class CFNetworkTools: AFHTTPSessionManager {
     //  MARK: - OAuth
     /// OAuth 授权 url
     /// - see:[http://open.weibo.com/wiki/Oauth2/authorize](http://open.weibo.com/wiki/Oauth2/authorize)
-    var oauthUrl: NSURL {
+    var oauthUrl: URL {
         let urlString = "https://api.weibo.com/oauth2/authorize?client_id=\(clientId)&redirect_uri=\(redirectUri)"
         //  https://api.weibo.com/oauth2/authorize?client_id=3020759535&redirect_uri=http://www.hao123.com
-        return NSURL(string: urlString)!
+        return URL(string: urlString)!
     }
     
     
@@ -86,7 +86,7 @@ class CFNetworkTools: AFHTTPSessionManager {
     ///
     /// - see: [http://open.weibo.com/wiki/OAuth2/access_token](http://open.weibo.com/wiki/OAuth2/access_token )
     /// - parameter code: 请求码/授权码
-    func loadAccessToken(code: String) -> RACSignal {
+    func loadAccessToken(_ code: String) -> RACSignal {
         let urlString = "https://api.weibo.com/oauth2/access_token"
         
         
@@ -109,7 +109,7 @@ class CFNetworkTools: AFHTTPSessionManager {
 //            
 //            }, failure: nil)
 //        return RACSignal.empty()
-        return request(.POST, URLString: urlString, parameters: params, needToken: false);
+        return request(.POST, URLString: urlString, parameters: params as [String : AnyObject]?, needToken: false);
     }
     
     /// 加载用户请求信息
@@ -117,11 +117,11 @@ class CFNetworkTools: AFHTTPSessionManager {
     /// - parameter uid:          uid
     /// - see: [http://open.weibo.com/wiki/2/users/show](http://open.weibo.com/wiki/2/users/show)
     /// - returns: RAC Signal
-    func loadUserInfo(uid: String) -> RACSignal {
+    func loadUserInfo(_ uid: String) -> RACSignal {
         let urlString = "https://api.weibo.com/2/users/show.json"
         let params = ["uid": uid];
         
-        return request(.GET, URLString: urlString, parameters: params);
+        return request(.GET, URLString: urlString, parameters: params as [String : AnyObject]?);
     }
     
     
@@ -131,7 +131,7 @@ class CFNetworkTools: AFHTTPSessionManager {
     /// - parameter parameters: parameters 地址
     ///
     /// - returns: 是否成功，如果token失效的时候返回false
-    private func appendToken(inout parameters: [String: AnyObject]?) -> Bool {
+    fileprivate func appendToken(_ parameters: inout [String: AnyObject]?) -> Bool {
         //  判断 token 是否存在，guard 刚好是和 if let 相反
         guard let token = CFUserAccountVM.sharedUserAccount.accessToken else {
             return false
@@ -142,7 +142,7 @@ class CFNetworkTools: AFHTTPSessionManager {
             parameters = [String: AnyObject]()
         }
         //  后续 token 都是有值的
-        parameters!["access_token"] = token
+        parameters!["access_token"] = token as AnyObject?
         
         return true
     }
@@ -154,37 +154,36 @@ class CFNetworkTools: AFHTTPSessionManager {
     /// - parameter parameters: 参数字典
     /// - parameter needToken:  是否包含token，默认 true
     /// - returns: RAC Signal
-    private func request(method: RequestMethod, URLString: String, parameters: [String: AnyObject]?, needToken: Bool = true) -> RACSignal {
+    fileprivate func request(_ method: RequestMethod, URLString: String, parameters: [String: AnyObject]?, needToken: Bool = true) -> RACSignal {
         return RACSignal.createSignal({ (subscriber) -> RACDisposable! in
             var dict = parameters
             
             //  如果 token 失效，直接返回错误
             if needToken && !self.appendToken(&dict) {
-                subscriber.sendError(NSError(domain: "com.cf.error", code: -1001, userInfo: ["errorMessage": "token 为空"]))
+                subscriber?.sendError(NSError(domain: "com.cf.error", code: -1001, userInfo: ["errorMessage": "token 为空"]))
                 return nil
             }
 
             //  1. 成功的回调闭包
-            let successCallBack = { (task: NSURLSessionDataTask, result: AnyObject?) -> Void in
+            let successCallBack = { (task: URLSessionDataTask, result: Any?) -> Void in
                 //  发送给订阅者
-                subscriber.sendNext(result)
-                subscriber.sendCompleted()
+                subscriber?.sendNext(result)
+                subscriber?.sendCompleted()
             }
-            let failureCallBack = { (task: NSURLSessionDataTask?, error: NSError) -> Void in
+            let failureCallBack = { (task: URLSessionDataTask?, error: Error) -> Void in
                 //  即使应用程序已经发布，在网络访问中，如果出现错误，仍然要输出日志，属于严重级别的错误
                 printLog(error, logError: true)
-                subscriber.sendError(error)
-                subscriber.sendCompleted()
+                subscriber?.sendError(error)
+                subscriber?.sendCompleted()
             }
-            let progressCallBack = { (progress: NSProgress) -> Void in
+            let progressCallBack = { (progress: Progress) -> Void in
                 
             }
             
             if method == .GET {
-                self.GET(URLString, parameters: dict, progress:progressCallBack, success: successCallBack, failure: failureCallBack)
-                
+                self.get(URLString, parameters: dict, progress:progressCallBack, success: successCallBack, failure: failureCallBack)
             } else {
-                self.POST(URLString, parameters: dict, progress:progressCallBack, success: successCallBack, failure: failureCallBack)
+                self.post(URLString, parameters: dict, progress:progressCallBack, success: successCallBack, failure: failureCallBack)
             }
             
             return nil
@@ -199,19 +198,19 @@ class CFNetworkTools: AFHTTPSessionManager {
     /// - parameter image:      image
     ///
     /// - returns: RACSignal
-    private func upload( URLString: String, parameters: [String: AnyObject]?, image: UIImage) -> RACSignal {
+    fileprivate func upload( _ URLString: String, parameters: [String: AnyObject]?, image: UIImage) -> RACSignal {
         //  RAC 闭包返回值是对信号销毁时需要做的内存销毁工作，同样是一个 block，AFN 可以直接返回 nil
         return RACSignal.createSignal() { (subscriber) -> RACDisposable! in
             var dict = parameters
             
             //  如果 token 失效，直接返回错误
             if !self.appendToken(&dict) {
-                subscriber.sendError(NSError(domain: "com.cf.error", code: -1001, userInfo: ["errorMessage": "token 为空"]))
+                subscriber?.sendError(NSError(domain: "com.cf.error", code: -1001, userInfo: ["errorMessage": "token 为空"]))
                 return nil
             }
 
             //  调用 AFN 上传文件方法
-            self.POST(URLString, parameters: dict, constructingBodyWithBlock: { (formData) in
+            self.post(URLString, parameters: dict, constructingBodyWith: { (formData) in
                 let data = UIImagePNGRepresentation(image)!
                 
                 //  处理图片文件
@@ -223,20 +222,20 @@ class CFNetworkTools: AFHTTPSessionManager {
                  3. 保存在服务器的文件名，很多后台允许随便写
                  4. 客户端告诉服务器上传文件的类型，格式：大类/小类 image/jpg、iamge/gif。如果不想告诉服务器类型，可以使用 application/octet-strem
                  */
-                formData.appendPartWithFileData(data, name: "pic", fileName: "myImage", mimeType: "application/octet-strem")
+                formData.appendPart(withFileData: data, name: "pic", fileName: "myImage", mimeType: "application/octet-strem")
                 
                 }, progress: { (progress) in
                     print(progress);
                 }, success: { (_, result) in
                     //  发送给订阅者
-                    subscriber.sendNext(result)
-                    subscriber.sendCompleted()
+                    subscriber?.sendNext(result)
+                    subscriber?.sendCompleted()
 
                 }, failure: { (_, error) in
                     //  即使应用程序已经发布，在网络访问中，如果出现错误，仍然要输出日志，属于严重级别的错误
                     printLog(error, logError: true)
-                    subscriber.sendError(error)
-                    subscriber.sendCompleted()
+                    subscriber?.sendError(error)
+                    subscriber?.sendCompleted()
 
             })
             return nil

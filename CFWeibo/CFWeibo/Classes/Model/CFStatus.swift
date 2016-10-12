@@ -49,10 +49,10 @@ class CFStatus: NSObject {
     init(dict: [String: AnyObject]) {
         super.init()
         
-        setValuesForKeysWithDictionary(dict)
+        setValuesForKeys(dict)
     }
     
-    override func setValue(value: AnyObject?, forKey key: String) {
+    override func setValue(_ value: Any?, forKey key: String) {
         super.setValue(value, forKey: key)
         if key == "user" {
             //  调用其他的构造函数
@@ -64,11 +64,11 @@ class CFStatus: NSObject {
 
     }
     
-    override func setValue(value: AnyObject?, forUndefinedKey key: String) {}
+    override func setValue(_ value: Any?, forUndefinedKey key: String) {}
     
     override var description: String {
         let keys = ["created_at", "id", "text", "source", "pic_urls", "retweeted_status"]
-        return dictionaryWithValuesForKeys(keys).description
+        return dictionaryWithValues(forKeys: keys).description
     }
     
 }

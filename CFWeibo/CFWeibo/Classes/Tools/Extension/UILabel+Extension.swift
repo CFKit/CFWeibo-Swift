@@ -24,7 +24,7 @@ extension UILabel {
         //  设置对象属性
         text = title
         textColor = color
-        font = isBold ? UIFont.boldSystemFontOfSize(fontSize) : UIFont.systemFontOfSize(fontSize)
+        font = isBold ? UIFont.boldSystemFont(ofSize: fontSize) : UIFont.systemFont(ofSize: fontSize)
         if layoutWidth > 0 {
             preferredMaxLayoutWidth = layoutWidth
             numberOfLines = 0

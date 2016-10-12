@@ -12,7 +12,7 @@ import SVProgressHUD
 
 class CFHomeWebVC: UIViewController {
     /// url
-    var url: NSURL?
+    var url: URL?
     
     override func loadView() {
         view = webView
@@ -22,8 +22,8 @@ class CFHomeWebVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         if url != nil {
-            url = NSURL(string: "http://localhost:8080/struts2-06")
-            webView.loadRequest(NSURLRequest(URL: url!))
+            url = URL(string: "http://localhost:8080/struts2-06")
+            webView.loadRequest(URLRequest(url: url!))
         }
     }
     
@@ -33,14 +33,14 @@ class CFHomeWebVC: UIViewController {
 
 //  MARK: - 代理回调
 extension CFHomeWebVC: UIWebViewDelegate {
-    func webViewDidStartLoad(webView: UIWebView) {
+    func webViewDidStartLoad(_ webView: UIWebView) {
         SVProgressHUD.show()
     }
-    func webViewDidFinishLoad(webView: UIWebView) {
+    func webViewDidFinishLoad(_ webView: UIWebView) {
         SVProgressHUD.dismiss()
     }
     
-    func webView(webView: UIWebView, shouldStartLoadWithRequest request: NSURLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
         print(request)
         
         

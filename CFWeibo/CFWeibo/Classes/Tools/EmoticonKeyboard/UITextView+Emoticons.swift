@@ -14,13 +14,13 @@ extension UITextView {
     var emoticonTextLength: Int {
         let attrText = attributedText
         var length = 0
-        attrText.enumerateAttributesInRange(
-            NSRange(location: 0, length: attrText.length),
+        attrText?.enumerateAttributes(
+            in: NSRange(location: 0, length: (attrText?.length)!),
             options: []) { (dict, range, _) in
                 if let attachment = dict["NSAttachment"] as? CFEmoticonAttachment {
                     length += (attachment.chs?.characters.count)! - 1
                 } else {
-                    let str = (attrText.string as NSString).substringWithRange(range)
+                    let str = NSString(string: (attrText?.string)!).substring(with: range)
                     length += str.characters.count
                 }
         }
@@ -31,13 +31,13 @@ extension UITextView {
     var emoticonText: String {
         let attrText = attributedText
         var strM = String()
-        attrText.enumerateAttributesInRange(
-            NSRange(location: 0, length: attrText.length),
+        attrText?.enumerateAttributes(
+            in: NSRange(location: 0, length: (attrText?.length)!),
             options: []) { (dict, range, _) in
                 if let attachment = dict["NSAttachment"] as? CFEmoticonAttachment {
                     strM += attachment.chs!
                 } else {
-                    let str = (attrText.string as NSString).substringWithRange(range)
+                    let str = NSString(string: (attrText?.string)!).substring(with: range)
                     strM += str
                 }
         }
@@ -48,7 +48,7 @@ extension UITextView {
     /// 插入表情符号
     ///
     /// - parameter emoticon: 表情符号模型
-    func insertEmoticon(emoticon: CFEmoticonM) {
+    func insertEmoticon(_ emoticon: CFEmoticonM) {
 
         //  1. 删除按钮
         if emoticon.isRemove == true {
@@ -57,14 +57,14 @@ extension UITextView {
         }
         //  2. emjo
         if emoticon.type == "1" {
-            replaceRange(selectedTextRange!, withText: emoticon.emoji!)
+            replace(selectedTextRange!, withText: emoticon.emoji!)
             return
         }
         //  3. 表情图片
         let imageText = CFEmoticonAttachment.emoticonAttributeText(emoticon, font: font!)
         
         let mStr = NSMutableAttributedString(attributedString: attributedText)
-        mStr.replaceCharactersInRange(selectedRange, withAttributedString: imageText)
+        mStr.replaceCharacters(in: selectedRange, with: imageText)
         
         //  记录光标当前位置
         let range = selectedRange

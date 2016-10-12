@@ -21,7 +21,7 @@ class CFStatusListVM: NSObject {
     /// - parameter isPullupRefresh: 是否上拉刷新标记
     ///
     /// - returns: RACSignal
-    func loadStatus(isPullupRefresh: Bool) -> RACSignal {
+    func loadStatus(_ isPullupRefresh: Bool) -> RACSignal {
         
         //  1. 初始刷新: status 数组没有内容
         //  2. 下拉刷新
@@ -54,15 +54,15 @@ class CFStatusListVM: NSObject {
                         //  如果是下拉刷新，提示用户刷新
                         if since_id > 0 {
                             //  RAC 是 OC 的。通知订阅者，下拉刷新的数据
-                            scriber.sendNext(arrayM.count)
+                            scriber?.sendNext(arrayM.count)
                         }
                         //printLog(self?.statusList)
-                        scriber.sendCompleted()
+                        scriber?.sendCompleted()
 
                     })
                     
                 } else if error != nil {
-                    scriber.sendError(error)
+                    scriber?.sendError(error)
                 }
             })
             
@@ -71,10 +71,10 @@ class CFStatusListVM: NSObject {
 
     }
     
-    private func cacheWebImage(statusVMList: [CFStatusVM], finished: () -> Void) {
+    fileprivate func cacheWebImage(_ statusVMList: [CFStatusVM], finished: @escaping () -> Void) {
         
         //  1. 定义一个调度组
-        let group = dispatch_group_create()
+        let group = DispatchGroup()
         var dataLength = 0
         
         //  遍历视图模型数组
@@ -84,23 +84,23 @@ class CFStatusListVM: NSObject {
             if count != 1 { continue }
             
             //  2. 入组（紧贴block。且必须配对出现）
-            dispatch_group_enter(group)
+            group.enter()
             //  使用 SDWebImage 下载图片
-            SDWebImageManager.sharedManager().downloadImageWithURL(statusVM.bmiddleURLs![0], options: [], progress: nil, completed: { (image, _, _, _, _) in
+            SDWebImageManager.shared().downloadImage(with: statusVM.bmiddleURLs![0] as URL!, options: [], progress: nil, completed: { (image, _, _, _, _) in
                 
                 //  图片缓存完成
                 if image != nil {
-                    let data  = UIImagePNGRepresentation(image)
-                    dataLength += data?.length ?? 0
+                    let data  = UIImagePNGRepresentation(image!)
+                    dataLength += data?.count ?? 0
                 }
                 
                 //  3. 出组(block 最后一句)
-                dispatch_group_leave(group)
+                group.leave()
             })
             
         }
         //  4. 调度组监听
-        dispatch_group_notify(group, dispatch_get_main_queue()) { 
+        group.notify(queue: DispatchQueue.main) { 
             printLog("缓存图像完成 \(dataLength / 1024) K")
             
             //  执行闭包

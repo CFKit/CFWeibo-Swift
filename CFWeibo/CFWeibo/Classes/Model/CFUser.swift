@@ -28,14 +28,14 @@ class CFUser: NSObject {
     init(dict: [String: AnyObject]) {
         super.init()
         
-        setValuesForKeysWithDictionary(dict)
+        setValuesForKeys(dict)
     }
     
-    override func setValue(value: AnyObject?, forUndefinedKey key: String) {}
+    override func setValue(_ value: Any?, forUndefinedKey key: String) {}
     
     override var description: String {
         let keys = ["id", "name", "profile_image_url", "verified", "mbrank"]
-        return dictionaryWithValuesForKeys(keys).description
+        return dictionaryWithValues(forKeys: keys).description
     }
 
     
