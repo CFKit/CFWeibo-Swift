@@ -8,37 +8,42 @@
 
 import UIKit
 import SVProgressHUD
+import SnapKit
+
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
 }
 
 fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
 }
-
 
 private let kStatusTextMaxLength = 200
 
 /// 撰写微博
 class CFComposeVC: UIViewController, UITextViewDelegate, CFPictureSelectorVCDelegate {
     /// 工具栏底部约束
-    fileprivate var toolbarBottomCons: NSLayoutConstraint?
+    fileprivate var tbBottomCons: Constraint?
     
-    fileprivate var pictureSelectorViewYCons: NSLayoutConstraint?
+    fileprivate var tbBottomConsNum: CGFloat = 0
     
-    fileprivate var pictureSelectorViewHeightCons: NSLayoutConstraint?
+    fileprivate var picSelViewYCons: Constraint?
+    
+    fileprivate var picSelViewHeightCons: Constraint?
+    
+    fileprivate var picSelViewHeightConsNum: CGFloat = 0
     
     /// 创建界面的函数
     override func loadView() {
@@ -112,9 +117,14 @@ extension CFComposeVC {
         textView.addSubview(pictureSelectorVC.view)
 
         //  自动布局
-        let cons = pictureSelectorVC.view.ff_AlignInner(type: ff_AlignType.topCenter, referView: textView, size: CGSize(width: kScreenWidth, height: 0), offset: CGPoint(x: 0, y: 150))
-        pictureSelectorViewHeightCons = pictureSelectorVC.view.ff_Constraint(cons, attribute: NSLayoutAttribute.height)
-        pictureSelectorViewYCons = pictureSelectorVC.view.ff_Constraint(cons, attribute: NSLayoutAttribute.top)
+        pictureSelectorVC.view.snp.makeConstraints { (make) in
+            make.centerX.equalTo(textView)
+            make.width.equalTo(kScreenWidth)
+            picSelViewHeightCons = make.height.equalTo(0).constraint
+            picSelViewHeightConsNum = 0
+            picSelViewYCons = make.top.equalTo(textView.snp.bottom).offset(150).constraint
+        }
+
         pictureNumChange(1)
         pictureSelectorVC.view.isHidden = true
     }
@@ -135,8 +145,10 @@ extension CFComposeVC {
         
         //  设置长度提示标签
         view.addSubview(lengthTipLabel)
-        lengthTipLabel.ff_AlignInner(type: ff_AlignType.bottomRight, referView: textView, size: nil, offset: CGPoint(x: -kStatusCellMargin - 30, y: -8))
-        
+        lengthTipLabel.snp.makeConstraints { (make) in
+            make.bottom.equalTo(textView.snp.bottom).offset(-8)
+            make.right.equalTo(textView.snp.right).offset(-kStatusCellMargin - 30)
+        }
     }
     
     /// 设置工具栏
@@ -146,8 +158,12 @@ extension CFComposeVC {
         
         toolbar.backgroundColor = UIColor(white: 0.8, alpha: 1.0)
         //  设置自动布局
-        let cons = toolbar.ff_AlignInner(type: ff_AlignType.bottomLeft, referView: view, size: CGSize(width: kScreenWidth, height: 44))
-        toolbarBottomCons = toolbar.ff_Constraint(cons, attribute: NSLayoutAttribute.bottom)
+        toolbar.snp.makeConstraints { (make) in
+            make.left.right.bottom.equalTo(view)
+            make.height.equalTo(44)
+            tbBottomCons = make.bottom.equalTo(view).constraint
+            tbBottomConsNum = 0
+        }
         
         //  添加按钮
         let itemSettings = [["imageName": "compose_toolbar_picture", "action": "selectPicture"],
@@ -182,14 +198,19 @@ extension CFComposeVC {
         navigationItem.titleView = titleView
         titleView.addSubview(titleLabel)
         titleView.addSubview(nameLabel)
-        
-        titleLabel.ff_AlignInner(type: ff_AlignType.topCenter, referView: titleView, size: nil)
-        nameLabel.ff_AlignInner(type: ff_AlignType.bottomCenter, referView: titleView, size: nil)
-        
+
+        titleLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(titleView)
+            make.centerX.equalTo(titleView)
+        }
+        nameLabel.snp.makeConstraints { (make) in
+            make.bottom.equalTo(titleView)
+            make.centerX.equalTo(titleView)
+        }        
     }
     
     fileprivate func configPictureViewCons() {
-        pictureSelectorViewYCons?.constant = textView.contentSize.height < 80 ? 90 : textView.contentSize.height + 21
+        picSelViewYCons?.update(offset: textView.contentSize.height < 80 ? 90 : textView.contentSize.height + 21)
         configTextViewInset()
         UIView.animate(withDuration: 0.2, animations: {
             self.view.layoutIfNeeded()
@@ -200,15 +221,16 @@ extension CFComposeVC {
     fileprivate func configTextViewInset() {
         //  判断键盘是否弹出
         let bottomInset: CGFloat
-        if toolbarBottomCons?.constant != 0 {// 弹出
+
+        if tbBottomConsNum != 0 {// 弹出
             bottomInset = 0
         } else {//  未弹出
             //  判断 pictureSelectorVC.view 是否隐藏
             if pictureSelectorVC.view.isHidden == true {
                 bottomInset = 0
             } else {
-                if textView.contentSize.height - (kScreenWidth - 64 - 44) > pictureSelectorViewHeightCons?.constant {
-                    bottomInset = (pictureSelectorViewHeightCons?.constant)! + 25
+                if textView.contentSize.height - (kScreenWidth - 64 - 44) > picSelViewHeightConsNum {
+                    bottomInset = picSelViewHeightConsNum + 25
                 } else if (textView.contentSize.height - (kScreenWidth - 64 - 44) > 0) {
                     bottomInset = textView.contentSize.height - (kScreenWidth - 64 - 44) + 25
                 } else {
@@ -288,7 +310,8 @@ extension CFComposeVC {
         
         //  获取 frame - OC 中结构体保存在字典中，存成 NSValue
         let rect = ((notification as NSNotification).userInfo![UIKeyboardFrameEndUserInfoKey]! as AnyObject).cgRectValue
-        toolbarBottomCons?.constant = (rect?.origin.y)! - kScreenHeight
+        tbBottomCons?.update(offset: (rect?.origin.y)! - kScreenHeight)
+        tbBottomConsNum = (rect?.origin.y)! - kScreenHeight
         configTextViewInset()
         
         //  获取动画时长
@@ -328,7 +351,8 @@ extension CFComposeVC {
         let lines = (count + 2) / 3
         let itemWidth = (kScreenWidth - 26) / 3.0
         let height = 16 + itemWidth * CGFloat(lines) + (CGFloat(lines) - 1) * 5
-        pictureSelectorViewHeightCons?.constant = height
+        picSelViewHeightCons?.update(offset: height)
+        picSelViewHeightConsNum = height
         
         configTextViewInset()
     }

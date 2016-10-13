@@ -53,8 +53,7 @@ class CFUserAccountVM: NSObject {
                 //  设置属性
                 self.userAccount = account
                 
-                
-                 CFNetworkTools.sharedTools.loadUserInfo(account.uid!).subscribeNext({ (result) -> Void in
+                CFNetworkTools.sharedTools.loadUserInfo(account.uid!).subscribeNext({ (result) -> Void in
 
                     //  设置账号属性
                     let dict = result as! [String: AnyObject]

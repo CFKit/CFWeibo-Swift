@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import SnapKit
+
 /// 控件间距
 let kStatusCellMargin: CGFloat = 12
 /// 头像大小
@@ -45,10 +47,9 @@ class CFStatusCell: UITableViewCell {
             contentLabel.attributedText = CFEmoticonVM.sharedEmoticonVM.emoticonText(statusText, font: contentLabel.font)
             
             pictureView.statusVM = statusVM
-            pictureViewWidthCons?.constant = pictureView.bounds.width
-            pictureViewHeightCons?.constant = pictureView.bounds.height
-            pictureViewTopCons?.constant = statusVM?.thumbnailURLs?.count == 0 ? 0 : kStatusCellMargin
-            
+            pictureViewWidthCons?.update(offset: pictureView.bounds.width)
+            pictureViewHeightCons?.update(offset: pictureView.bounds.height)
+            pictureViewTopCons?.update(offset: statusVM?.thumbnailURLs?.count == 0 ? 0 : kStatusCellMargin)
             
             //  在自动布局系统中，随机表格动态修改约束，使用自动计算行高很容易出现问题
 //            pictureViewHeightCons?.constant = CGFloat(random() % 3) * kstatusPictureItemWidth
@@ -56,11 +57,11 @@ class CFStatusCell: UITableViewCell {
         }
     }
     /// CFStatusPictureView 宽度约束
-    var pictureViewWidthCons: NSLayoutConstraint?
+    var pictureViewWidthCons: Constraint?
     /// CFStatusPictureView 高度约束
-    var pictureViewHeightCons: NSLayoutConstraint?
+    var pictureViewHeightCons: Constraint?
     /// CFStatusPictureView 顶部约束
-    var pictureViewTopCons: NSLayoutConstraint?
+    var pictureViewTopCons: Constraint?
 
     
     /// 计算行高
@@ -139,23 +140,23 @@ extension CFStatusCell {
         contentView.addSubview(bottomView)
         
         //  1> 顶部分割视图
-        topSepView.ff_AlignInner(
-            type: ff_AlignType.topLeft,
-            referView: contentView,
-            size: CGSize(width: kScreenWidth, height: 10))
+        topSepView.snp.makeConstraints { (make) in
+            make.top.equalTo(contentView)
+            make.left.equalTo(contentView)
+            make.size.equalTo(CGSize(width: kScreenWidth, height: 10))
+        }
         //  2> 顶部视图
-        topView.ff_AlignVertical(
-            type: ff_AlignType.bottomLeft,
-            referView: topSepView,
-            size: CGSize(width: kScreenWidth, height: kStatusIconWidth + kStatusCellMargin))
-        
-        //        topView.ff_AlignInner(type: ff_AlignType.TopLeft, referView: contentView, size: CGSize(width: kScreenWidth, height: kStatusCellMargin + kStatusIconWidth), offset: CGPoint(x: 0, y: 10))
+        topView.snp.makeConstraints { (make) in
+            make.top.equalTo(topSepView.snp.bottom)
+            make.left.equalTo(topSepView)
+            make.size.equalTo(CGSize(width: kScreenWidth, height: kStatusIconWidth + kStatusCellMargin))
+        }
         
         //  3> 文本标签
-        contentLabel.ff_AlignVertical(
-            type: ff_AlignType.bottomLeft,
-            referView: topView, size: nil,
-            offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
+        contentLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(topView).offset(kStatusCellMargin)
+            make.top.equalTo(topView.snp.bottom).offset(kStatusCellMargin)
+        }
         
         //  4> 图片视图
         //        let cons = pictureView.ff_AlignVertical(
@@ -169,18 +170,16 @@ extension CFStatusCell {
         //        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.Top)
         
         //  5> 底部视图
-        bottomView.ff_AlignVertical(
-            type: ff_AlignType.bottomLeft,
-            referView: pictureView,
-            size: CGSize(width: kScreenWidth, height: 34),
-            offset: CGPoint(x: -kStatusCellMargin, y: kStatusCellMargin))
-        
+        bottomView.snp.makeConstraints { (make) in
+            make.top.equalTo(pictureView.snp.bottom).offset(kStatusCellMargin)
+            make.left.equalTo(pictureView).offset(-kStatusCellMargin)
+            make.size.equalTo(CGSize(width: kScreenWidth, height: 34))
+        }
         //  指定底部视图相对底边约束
         //        bottomView.ff_AlignInner(
         //            type: ff_AlignType.BottomRight,
         //            referView: contentView,
         //            size: nil)
-        
     }
 
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SnapKit
 /// 转发微博
 let kForwardStatusCellIdentifier = "CFForwardStatusCell"
 
@@ -31,22 +32,25 @@ class CFForwardStatusCell: CFStatusCell {
         //  添加控件，加背景图片
         contentView.insertSubview(backButton, belowSubview: pictureView)
         contentView.insertSubview(forwardLabel, aboveSubview:backButton)
-        
-        //  1. 北京按钮
-        backButton.ff_AlignVertical(type: ff_AlignType.bottomLeft, referView: contentLabel, size: nil, offset: CGPoint(x: -kStatusCellMargin, y: kStatusCellMargin))
-        backButton.ff_AlignVertical(type: ff_AlignType.topRight, referView: bottomView, size: nil)
+        //  1. 背景按钮
+        backButton.snp.makeConstraints { (make) in
+            make.top.equalTo(contentLabel.snp.bottom).offset(kStatusCellMargin)
+            make.left.equalTo(contentLabel.snp.left).offset(-kStatusCellMargin)
+            make.bottom.equalTo(bottomView.snp.top)
+            make.right.equalTo(bottomView.snp.right)
+        }
         //  2. 转发文字
-        forwardLabel.ff_AlignInner(type: ff_AlignType.topLeft, referView: backButton, size: nil, offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
+        forwardLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(backButton.snp.top).offset(kStatusCellMargin)
+            make.left.equalTo(backButton.snp.left).offset(kStatusCellMargin)
+        }
         //  3. 图片视图
-        let cons = pictureView.ff_AlignVertical(
-            type: ff_AlignType.bottomLeft,
-            referView: forwardLabel,
-            size: CGSize(width: kStatusPictureMaxWidth, height: kStatusPictureMaxWidth),
-            offset: CGPoint(x: 0, y: kStatusCellMargin))
-        //  记录约束
-        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.width)
-        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.height)
-        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.top)
+        pictureView.snp.makeConstraints { (make) in
+            make.left.equalTo(forwardLabel)
+            pictureViewTopCons = make.top.equalTo(forwardLabel.snp.bottom).offset(kStatusCellMargin).constraint
+            pictureViewWidthCons = make.width.equalTo(kStatusPictureMaxWidth).constraint
+            pictureViewHeightCons = make.height.equalTo(kStatusPictureMaxWidth).constraint
+        }
     }
 
     
@@ -55,7 +59,6 @@ class CFForwardStatusCell: CFStatusCell {
     fileprivate lazy var backButton: UIButton = {
         let button = UIButton()
         button.backgroundColor = UIColor(white: 0.95, alpha: 1.0)
-        
         return button
     } ()
     /// 转发文字

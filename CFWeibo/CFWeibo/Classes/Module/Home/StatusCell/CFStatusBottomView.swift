@@ -39,10 +39,36 @@ class CFStatusBottomView: UIView {
         addSubview(bottomLine)
         addSubview(bottomLine2)
         
-        ff_HorizontalTile([forwarButton, commonButton, likeButton], insets: UIEdgeInsets.zero)
-        topLine.ff_AlignInner(type: ff_AlignType.topLeft, referView: self, size: CGSize(width: kScreenWidth, height: 1))
-        bottomLine.ff_AlignInner(type: ff_AlignType.topLeft, referView: bottomLine, size: CGSize(width: kScreenWidth, height: 0.5))
-        bottomLine2.ff_AlignInner(type: ff_AlignType.bottomLeft, referView: self, size: CGSize(width: kScreenWidth, height: 0.5))
+        topLine.snp.makeConstraints { (make) in
+            make.left.top.right.equalTo(self)
+            make.height.equalTo(1)
+        }
+        bottomLine2.snp.makeConstraints { (make) in
+            make.left.right.bottom.equalTo(self)
+            make.height.equalTo(0.5)
+        }
+        bottomLine.snp.makeConstraints { (make) in
+            make.left.right.equalTo(self)
+            make.bottom.equalTo(bottomLine2.snp.top)
+            make.height.equalTo(0.5)
+        }
+        forwarButton.snp.makeConstraints { (make) in
+            make.top.equalTo(topLine.snp.bottom)
+            make.left.equalTo(self)
+            make.bottom.equalTo(bottomLine.snp.top)
+        }
+        commonButton.snp.makeConstraints { (make) in
+            make.top.equalTo(forwarButton)
+            make.left.equalTo(forwarButton.snp.right)
+            make.right.equalTo(likeButton.snp.left)
+            make.size.equalTo(forwarButton)
+        }
+        likeButton.snp.makeConstraints { (make) in
+            make.top.equalTo(forwarButton)
+            make.size.equalTo(forwarButton)
+            make.right.equalTo(self)
+        }
+        
     }
     
     fileprivate lazy var forwarButton = UIButton(title: " 转发", imageName: "timeline_icon_retweet", color: UIColor.darkGray, fontSize: 12)

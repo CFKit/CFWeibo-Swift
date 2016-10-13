@@ -8,7 +8,7 @@
 
 import UIKit
 import SDWebImage
-
+import SnapKit
 
 //  MARK: - 通知常量，保存在常量区。足够长可以避免重复
 let kStatusPictureViewSelectedPhotoNotification = "kStatusPictureViewSelectedNotification"
@@ -194,8 +194,15 @@ private class CFStatusPictureCell: UICollectionViewCell {
         backgroundColor = UIColor.white
         addSubview(iconView)
         iconView.addSubview(gifIconView)
-        iconView.ff_Fill(self)
-        gifIconView.ff_AlignInner(type: ff_AlignType.bottomRight, referView: iconView, size: nil)
+        iconView.snp.makeConstraints { (make) in
+            make.size.equalTo(self)
+            make.center.equalTo(self)
+        }
+
+        gifIconView.snp.makeConstraints { (make) in
+            make.right.equalTo(iconView)
+            make.bottom.equalTo(iconView)
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {

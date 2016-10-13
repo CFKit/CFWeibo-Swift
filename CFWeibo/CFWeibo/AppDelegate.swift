@@ -50,7 +50,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.backgroundColor = UIColor.white
         window?.rootViewController = defaultRootViewController()
         window?.makeKeyAndVisible()
-
+        
         return true
     }
     

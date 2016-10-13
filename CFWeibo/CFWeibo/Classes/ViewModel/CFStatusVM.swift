@@ -56,12 +56,14 @@ class CFStatusVM: NSObject {
     /// 认证类型
     // 计算型属性，写等号时为存储性属性，
     var userVipImage: UIImage? {
-//        print(status.user?.verified)
+        //  TODO: 认证类型字段名修改了
+        print(status.user?.verified)
+
         switch(status.user?.verified ?? -1) {
-        case 0: return UIImage(named: "avatar_vip")
-        case 2, 3, 5: return UIImage(named: "avatar_enterprise_vip")
-        case 220: return UIImage(named: "avatar_grassroot")
-        default: return nil
+            case 0: return UIImage(named: "avatar_vip")
+            case 2, 3, 5: return UIImage(named: "avatar_enterprise_vip")
+            case 220: return UIImage(named: "avatar_grassroot")
+            default: return nil
         }
     }
     

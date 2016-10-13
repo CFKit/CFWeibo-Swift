@@ -16,14 +16,12 @@ class CFOriginalityStatusCell: CFStatusCell {
         super.setupUI()
         pictureView.backgroundColor = UIColor.white
         
-        let cons = pictureView.ff_AlignVertical(
-            type: ff_AlignType.bottomLeft,
-            referView: contentLabel,
-            size: CGSize(width: kStatusPictureMaxWidth, height: kStatusPictureMaxWidth),
-            offset: CGPoint(x: 0, y: kStatusCellMargin))
         //  记录约束
-        pictureViewWidthCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.width)
-        pictureViewHeightCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.height)
-        pictureViewTopCons = pictureView.ff_Constraint(cons, attribute: NSLayoutAttribute.top)
+        pictureView.snp.makeConstraints { (make) in
+            make.left.equalTo(contentLabel)
+            pictureViewTopCons = make.top.equalTo(contentLabel.snp.bottom).offset(kStatusCellMargin).constraint
+            pictureViewWidthCons = make.width.equalTo(kStatusPictureMaxWidth).constraint
+            pictureViewHeightCons = make.height.equalTo(kStatusPictureMaxWidth).constraint
+        }
     }
 }

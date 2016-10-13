@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import SnapKit
 /// 向下拖拽的偏移量
 private let kRefreshControlMaxOfset: CGFloat = -60
 
@@ -69,8 +69,10 @@ class CFRefreshControl: UIRefreshControl {
         addSubview(refreshView)
         
         //  自动布局，从 xib 加载的视图会保留 xib 中指定的大小
-        refreshView.ff_AlignInner(type: ff_AlignType.centerCenter, referView: self, size: refreshView.bounds.size)
-        
+        refreshView.snp.makeConstraints { (make) in
+            make.center.equalTo(self)
+            make.size.equalTo(refreshView.bounds.size)
+        }
     }
     
     func addRefreshing(_ target: AnyObject, selector: Selector) {

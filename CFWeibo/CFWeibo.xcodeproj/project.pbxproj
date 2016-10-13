@@ -32,7 +32,6 @@
 		5F155A761C9FD54A00D755D7 /* CFCommonTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F155A5D1C9FD54A00D755D7 /* CFCommonTools.swift */; };
 		5F155A771C9FD54A00D755D7 /* CFNetworkTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F155A5E1C9FD54A00D755D7 /* CFNetworkTools.swift */; };
 		5F155A781C9FD54A00D755D7 /* UILabel+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F155A601C9FD54A00D755D7 /* UILabel+Extension.swift */; };
-		5F155A791C9FD54A00D755D7 /* UIView+AutoLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F155A611C9FD54A00D755D7 /* UIView+AutoLayout.swift */; };
 		5F155A7C1C9FD54A00D755D7 /* CFUserAccountVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F155A651C9FD54A00D755D7 /* CFUserAccountVM.swift */; };
 		5F155A7E1CA0E2CA00D755D7 /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F155A7D1CA0E2CA00D755D7 /* UIButton+Extension.swift */; };
 		5F4CA2E01D13E39A007A693A /* UINavationBar+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4CA2DF1D13E39A007A693A /* UINavationBar+Extension.swift */; };
@@ -109,7 +108,6 @@
 		5F155A5D1C9FD54A00D755D7 /* CFCommonTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFCommonTools.swift; sourceTree = "<group>"; };
 		5F155A5E1C9FD54A00D755D7 /* CFNetworkTools.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFNetworkTools.swift; sourceTree = "<group>"; };
 		5F155A601C9FD54A00D755D7 /* UILabel+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UILabel+Extension.swift"; sourceTree = "<group>"; };
-		5F155A611C9FD54A00D755D7 /* UIView+AutoLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "UIView+AutoLayout.swift"; path = "../UIView+AutoLayout.swift"; sourceTree = "<group>"; };
 		5F155A651C9FD54A00D755D7 /* CFUserAccountVM.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CFUserAccountVM.swift; sourceTree = "<group>"; };
 		5F155A7D1CA0E2CA00D755D7 /* UIButton+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		5F4CA2DF1D13E39A007A693A /* UINavationBar+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UINavationBar+Extension.swift"; sourceTree = "<group>"; };
@@ -322,7 +320,6 @@
 		5F155A5F1C9FD54A00D755D7 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
-				5F155A611C9FD54A00D755D7 /* UIView+AutoLayout.swift */,
 				5F4CA3721D193EC9007A693A /* String+Regex.swift */,
 				5F4CA3501D19357B007A693A /* NSDate+Extension.swift */,
 				5FDF0A431CBB964C00C759E7 /* UIBarButtonItem+Extension.swift */,
@@ -669,7 +666,6 @@
 				5FB8F2161D10224C002DE8AD /* CFPhotoBrowserVC.swift in Sources */,
 				5F4CA3E81D1A492E007A693A /* UIStroyboard+Extension.swift in Sources */,
 				5F82E6251D057DD80060BC9D /* CFEmoticonKeyboardVC.swift in Sources */,
-				5F155A791C9FD54A00D755D7 /* UIView+AutoLayout.swift in Sources */,
 				5F82E6271D057DD80060BC9D /* CFEmoticonM.swift in Sources */,
 				5F106AAC1CAA7955003BAA2D /* CFStatusBottomView.swift in Sources */,
 				5F155A771C9FD54A00D755D7 /* CFNetworkTools.swift in Sources */,

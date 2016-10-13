@@ -7,5 +7,6 @@ pod 'AFNetworking'
 pod 'ReactiveCocoa'
 pod 'SDWebImage'
 pod 'SVProgressHUD'
+pod 'SnapKit'
 
 end

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-
+import SnapKit
 
 class CFStatusTopView: UIView {
 
@@ -50,13 +50,32 @@ class CFStatusTopView: UIView {
         addSubview(sourceLabel)
         addSubview(vipImageView)
         //  2. 自动布局
-        let offset = CGPoint(x: kStatusCellMargin, y: 0)
-        iconView.ff_AlignInner(type: ff_AlignType.topLeft, referView: self, size: CGSize(width: kStatusIconWidth, height: kStatusIconWidth), offset: CGPoint(x: kStatusCellMargin, y: kStatusCellMargin))
-        nameLabel.ff_AlignHorizontal(type: ff_AlignType.topRight, referView: iconView, size: nil, offset: offset)
-        memberImageView.ff_AlignHorizontal(type: ff_AlignType.topRight, referView: nameLabel, size: nil, offset: offset)
-        timeLabel.ff_AlignHorizontal(type: ff_AlignType.bottomRight, referView: iconView, size: nil, offset: offset)
-        sourceLabel.ff_AlignHorizontal(type: ff_AlignType.topRight, referView: timeLabel, size: nil, offset: offset)
-        vipImageView.ff_AlignInner(type: ff_AlignType.bottomRight, referView: iconView, size: CGSize(width: 14, height: 14), offset: CGPoint(x: 3, y: 3))
+        iconView.snp.makeConstraints { (make) in
+            make.size.equalTo(CGSize(width: kStatusIconWidth, height: kStatusIconWidth))
+            make.left.equalTo(self).offset(kStatusCellMargin)
+            make.top.equalTo(self).offset(kStatusCellMargin)
+        }
+        nameLabel.snp.makeConstraints { (make) in
+            make.top.equalTo(iconView)
+            make.left.equalTo(iconView.snp.right).offset(kStatusCellMargin)
+        }
+        memberImageView.snp.makeConstraints { (make) in
+            make.top.equalTo(nameLabel)
+            make.left.equalTo(nameLabel.snp.right).offset(kStatusCellMargin)
+        }
+        timeLabel.snp.makeConstraints { (make) in
+            make.bottom.equalTo(iconView)
+            make.left.equalTo(iconView.snp.right).offset(kStatusCellMargin)
+        }
+        sourceLabel.snp.makeConstraints { (make) in
+            make.left.equalTo(timeLabel.snp.right).offset(kStatusCellMargin)
+            make.top.equalTo(timeLabel)
+        }
+        vipImageView.snp.makeConstraints { (make) in
+            make.size.equalTo(CGSize(width: 14, height: 14))
+            make.bottom.equalTo(iconView).offset(3)
+            make.right.equalTo(iconView.snp.right).offset(3)
+        }
 
     }
     

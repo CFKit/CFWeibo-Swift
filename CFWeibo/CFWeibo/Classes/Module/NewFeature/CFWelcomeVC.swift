@@ -8,10 +8,13 @@
 
 import UIKit
 import SDWebImage
+import SnapKit
 
 class CFWelcomeVC: UIViewController {
     //  头像底部约束
-    fileprivate var iconBottomCons: NSLayoutConstraint?
+    fileprivate var iconBottomCons: Constraint?
+    
+    fileprivate var iconBottomConsNum: CGFloat = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,11 +28,11 @@ class CFWelcomeVC: UIViewController {
         super.viewDidAppear(animated)
         //  开始动画
         //  计算目标的约束数值
-        let h = -(UIScreen.main.bounds.height + iconBottomCons!.constant)
+        let h = -(UIScreen.main.bounds.height + iconBottomConsNum)
         //  修改约束数值. 一旦使用了自动布局。就不要在直接设置 frame
         //  自动布局系统会手机界面上所有需要重新调整 位置/大小 的空间约束
         //  如果开发中需要强行更新约束，可以直接调用 layoutIfNeed 方法，会将当前所有的约束变化应用到控件上
-        iconBottomCons?.constant = h
+        iconBottomCons?.update(offset: h)
         
         UIView.animate(withDuration: 1, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 10, options: [], animations: { () -> Void in
             self.view.layoutIfNeeded()
@@ -52,12 +55,22 @@ class CFWelcomeVC: UIViewController {
         view.addSubview(iconImageView)
         view.addSubview(welcomeLabel)
         
-        backImageView.ff_Fill(view)
+        backImageView.snp.makeConstraints { (make) in
+            make.size.equalTo(view)
+            make.center.equalTo(view);
+        }
+
+        iconImageView.snp.makeConstraints { (make) in
+            make.size.equalTo(CGSize(width: 90, height: 90))
+            make.centerX.equalTo(view)
+            iconBottomCons = make.bottom.equalTo(view).offset( -UIScreen.main.bounds.height * 0.3).constraint
+            iconBottomConsNum = -UIScreen.main.bounds.height * 0.3
+        }
         
-        let cons = iconImageView.ff_AlignInner(type: ff_AlignType.bottomCenter, referView: view, size: CGSize(width: 90, height: 90), offset: CGPoint(x: 0, y: -UIScreen.main.bounds.height * 0.3))
-        self.iconBottomCons = iconImageView.ff_Constraint(cons, attribute: NSLayoutAttribute.bottom)
-        
-        welcomeLabel.ff_AlignInner(type: ff_AlignType.bottomCenter, referView: iconImageView, size: nil, offset: CGPoint(x: 0, y: 16 + welcomeLabel.bounds.size.height))
+        welcomeLabel.snp.makeConstraints { (make) in
+            make.centerX.equalTo(iconImageView)
+            make.top.equalTo(iconImageView.snp.bottom).offset(16 + welcomeLabel.bounds.size.height)
+        }
         
 //        backImageView.translatesAutoresizingMaskIntoConstraints = false;
 //        view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-0-[v]-0-|", options: [], metrics:nil, views: ["v": backImageView]))
